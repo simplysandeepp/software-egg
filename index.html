@@ -1,0 +1,1843 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Software Engineering — Exam Prep</title>
+<style>
+  :root{
+    --sky:#0ea5e9;
+    --sky-soft:#e0f2fe;
+    --sky-line:#bae6fd;
+    --violet:#7c3aed;
+    --violet-soft:#ede9fe;
+    --magenta:#c026d3;
+    --magenta-soft:#fae8ff;
+    --ink:#111827;
+    --ink-soft:#334155;
+    --grey:#64748b;
+    --grey-line:#e2e8f0;
+    --grey-bg:#f8fafc;
+    --white:#ffffff;
+    --shadow:0 1px 3px rgba(15,23,42,.08),0 8px 24px rgba(15,23,42,.05);
+    --radius:14px;
+    --maxw:880px;
+  }
+  *{box-sizing:border-box;}
+  html{scroll-behavior:smooth;scroll-padding-top:190px;}
+  body{
+    margin:0;
+    font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+    color:var(--ink);
+    background:var(--grey-bg);
+    font-size:18px;
+    line-height:1.7;
+    -webkit-text-size-adjust:100%;
+  }
+
+  /* ---------- Progress + Top Bar ---------- */
+  #progress{
+    position:fixed;top:0;left:0;height:4px;width:0%;
+    background:linear-gradient(90deg,var(--sky),var(--violet),var(--magenta));
+    z-index:60;transition:width .1s linear;
+  }
+  header.topbar{
+    position:sticky;top:0;z-index:50;
+    background:rgba(255,255,255,.95);
+    backdrop-filter:blur(8px);
+    border-bottom:1px solid var(--grey-line);
+  }
+  .topbar-inner{
+    max-width:var(--maxw);margin:0 auto;padding:12px 16px 14px;
+  }
+  .brand{
+    display:flex;align-items:center;gap:10px;margin-bottom:10px;
+  }
+  .brand .logo{
+    width:34px;height:34px;border-radius:9px;flex:none;
+    background:linear-gradient(135deg,var(--sky),var(--violet));
+    display:flex;align-items:center;justify-content:center;
+    color:#fff;font-weight:800;font-size:18px;
+  }
+  .brand h1{font-size:20px;margin:0;font-weight:800;letter-spacing:-.3px;}
+  .brand span.sub{color:var(--grey);font-size:13px;font-weight:600;}
+  .searchbox{position:relative;}
+  .searchbox input{
+    width:100%;padding:13px 44px 13px 16px;font-size:16px;
+    border:1.5px solid var(--grey-line);border-radius:11px;
+    background:var(--white);color:var(--ink);outline:none;
+  }
+  .searchbox input:focus{border-color:var(--sky);box-shadow:0 0 0 3px var(--sky-soft);}
+  .searchbox .ic{position:absolute;right:14px;top:50%;transform:translateY(-50%);color:var(--grey);font-size:18px;}
+  .toolrow{display:flex;gap:8px;margin-top:10px;flex-wrap:wrap;}
+  .toolrow button{
+    font:inherit;font-size:13px;font-weight:700;cursor:pointer;
+    padding:7px 13px;border-radius:9px;border:1.5px solid var(--grey-line);
+    background:var(--white);color:var(--ink-soft);
+  }
+  .toolrow button:hover{border-color:var(--sky);color:var(--sky);}
+  #searchcount{font-size:13px;color:var(--grey);align-self:center;font-weight:600;}
+
+  /* ---------- Unit nav ---------- */
+  .unitnav{
+    display:flex;gap:7px;margin-top:11px;padding-bottom:2px;
+    overflow-x:auto;-webkit-overflow-scrolling:touch;scrollbar-width:thin;
+  }
+  .unitnav a{
+    flex:0 0 auto;font-size:12.5px;font-weight:700;text-decoration:none;
+    padding:6px 12px;border-radius:30px;white-space:nowrap;
+    border:1.5px solid var(--sky-line);background:var(--sky-soft);color:var(--sky);
+    transition:background .15s,color .15s;
+  }
+  .unitnav a:hover{background:var(--sky);color:#fff;}
+
+  /* ---------- Layout ---------- */
+  main{max-width:var(--maxw);margin:0 auto;padding:22px 16px 120px;}
+
+  .unit{margin-top:34px;}
+  .unit-tag{
+    display:inline-block;font-size:12px;font-weight:800;letter-spacing:1px;
+    text-transform:uppercase;color:var(--violet);
+    background:var(--violet-soft);padding:5px 11px;border-radius:30px;
+  }
+  .unit-title{
+    font-size:24px;font-weight:800;margin:10px 0 4px;letter-spacing:-.4px;
+    border-bottom:3px solid var(--sky);padding-bottom:8px;
+  }
+
+  /* ---------- Question Card ---------- */
+  .card{
+    background:var(--white);border:1px solid var(--grey-line);
+    border-radius:var(--radius);margin-top:16px;overflow:hidden;
+    box-shadow:var(--shadow);
+  }
+  .q-head{
+    display:flex;align-items:flex-start;gap:12px;cursor:pointer;
+    padding:18px 18px;user-select:none;
+  }
+  .q-head:hover{background:var(--sky-soft);}
+  .q-num{
+    flex:none;min-width:34px;height:34px;padding:0 6px;border-radius:9px;
+    background:linear-gradient(135deg,var(--sky),var(--violet));color:#fff;
+    font-weight:800;font-size:15px;display:flex;align-items:center;justify-content:center;
+  }
+  .q-text{flex:1;font-size:18px;font-weight:700;line-height:1.45;color:var(--ink);}
+  .q-toggle{flex:none;font-size:22px;color:var(--violet);transition:transform .2s ease;line-height:1;margin-top:4px;}
+  .card.open .q-toggle{transform:rotate(45deg);}
+  .answer{display:none;padding:0 20px 22px;border-top:1px solid var(--grey-line);}
+  .card.open .answer{display:block;}
+
+  /* ---------- Answer typography ---------- */
+  .answer h4{
+    font-size:17px;margin:20px 0 8px;color:var(--violet);font-weight:800;
+  }
+  .answer p{margin:10px 0;color:var(--ink-soft);}
+  .answer ul,.answer ol{margin:10px 0;padding-left:24px;color:var(--ink-soft);}
+  .answer li{margin:6px 0;}
+  .answer strong,.answer b{color:var(--ink);}
+  .kw{background:var(--sky-soft);color:#075985;padding:1px 6px;border-radius:5px;font-weight:700;}
+
+  table{
+    width:100%;border-collapse:collapse;margin:14px 0;font-size:15.5px;
+    display:block;overflow-x:auto;white-space:nowrap;
+  }
+  th,td{border:1px solid var(--grey-line);padding:9px 12px;text-align:left;vertical-align:top;}
+  th{background:var(--violet-soft);color:var(--violet);font-weight:800;}
+  tr:nth-child(even) td{background:var(--grey-bg);}
+
+  .note,.tip,.key,.adv,.dis{
+    border-radius:11px;padding:13px 15px;margin:14px 0;font-size:16px;
+    border-left:5px solid;
+  }
+  .note{background:#eff6ff;border-color:#3b82f6;}
+  .tip{background:var(--magenta-soft);border-color:var(--magenta);}
+  .key{background:#f0fdf4;border-color:#16a34a;}
+  .adv{background:#f0fdf4;border-color:#16a34a;}
+  .dis{background:#fef2f2;border-color:#ef4444;}
+  .note b,.tip b,.key b,.adv b,.dis b{display:block;margin-bottom:4px;}
+  .badge-row{display:flex;gap:14px;flex-wrap:wrap;}
+  .badge-row > div{flex:1;min-width:230px;}
+
+  /* ---------- Diagram wrapper ---------- */
+  .diagram{
+    margin:16px 0;padding:14px;background:var(--grey-bg);
+    border:1px dashed var(--sky-line);border-radius:12px;overflow-x:auto;
+  }
+  .diagram svg{display:block;max-width:100%;height:auto;margin:0 auto;}
+  .dia-cap{text-align:center;font-size:13px;color:var(--grey);font-weight:700;margin-top:8px;}
+
+  .copybtn{
+    margin-top:14px;font:inherit;font-size:13px;font-weight:700;cursor:pointer;
+    padding:8px 14px;border-radius:9px;border:1.5px solid var(--violet);
+    background:var(--white);color:var(--violet);
+  }
+  .copybtn:hover{background:var(--violet);color:#fff;}
+
+  /* ---------- Back to top ---------- */
+  #toTop{
+    position:fixed;right:18px;bottom:22px;z-index:55;
+    width:50px;height:50px;border-radius:50%;border:none;cursor:pointer;
+    background:linear-gradient(135deg,var(--sky),var(--violet));color:#fff;
+    font-size:22px;box-shadow:var(--shadow);display:none;
+  }
+  #toTop.show{display:block;}
+
+  .nores{text-align:center;color:var(--grey);padding:40px 0;font-weight:600;display:none;}
+
+  /* ---------- Responsive ---------- */
+  @media(max-width:600px){
+    body{font-size:17px;}
+    .q-text{font-size:16.5px;}
+    .unit-title{font-size:21px;}
+    main{padding:16px 12px 110px;}
+    .topbar-inner{padding:10px 12px 12px;}
+    table{font-size:14px;}
+  }
+  @media(prefers-reduced-motion:reduce){
+    html{scroll-behavior:auto;}
+    *{transition:none!important;}
+  }
+</style>
+</head>
+<body>
+<div id="progress"></div>
+
+<header class="topbar">
+  <div class="topbar-inner">
+    <div class="brand">
+      <div class="logo">SE</div>
+      <div>
+        <h1>Software Engineering</h1>
+        <span class="sub">40-Question Exam Prep · tap any question to expand</span>
+      </div>
+    </div>
+    <div class="searchbox">
+      <input id="search" type="text" placeholder="Search questions (e.g. waterfall, coupling, DFD)…" autocomplete="off">
+      <span class="ic">⌕</span>
+    </div>
+    <div class="toolrow">
+      <button id="expandAll">Expand all</button>
+      <button id="collapseAll">Collapse all</button>
+      <span id="searchcount"></span>
+    </div>
+    <nav class="unitnav" aria-label="Jump to unit">
+      <a href="#unit1">U1 · Intro &amp; SRS</a>
+      <a href="#unit2">U2 · Process &amp; Agile</a>
+      <a href="#unit3">U3 · Design</a>
+      <a href="#unit4">U4 · UML</a>
+      <a href="#unit5">U5 · DFD</a>
+      <a href="#unit6">U6 · Testing</a>
+      <a href="#unit7">U7 · Estimation</a>
+      <a href="#unit8">U8 · Feasibility</a>
+    </nav>
+  </div>
+</header>
+
+<main id="content">
+<p class="nores" id="nores">No questions match your search. Try a different keyword.</p>
+
+<!-- ===================== UNIT 1 ===================== -->
+<section class="unit" id="unit1">
+  <span class="unit-tag">Unit 1</span>
+  <h2 class="unit-title">Introduction, SRS &amp; Requirements</h2>
+
+  <div class="card" data-q="Q1 define software engineering objectives goals evolution complexity principles modern computing services">
+    <div class="q-head"><div class="q-num">Q1</div><div class="q-text">Define Software Engineering. Explain its objectives, goals, evolution, role in modern computing, software services, software complexity and principles used to manage complexity.</div><div class="q-toggle">+</div></div>
+    <div class="answer">
+      <h4>Definition</h4>
+      <p><span class="kw">Software Engineering</span> is the systematic, disciplined and quantifiable application of <b>engineering principles</b> to the design, development, operation and maintenance of software. The classic IEEE definition: <i>"the application of a systematic, disciplined, quantifiable approach to the development, operation and maintenance of software."</i></p>
+      <p>In simple words, it is the art of building <b>reliable, efficient and maintainable</b> software in a cost-effective way using well-defined methods, instead of writing code in an ad-hoc manner.</p>
+
+      <h4>Objectives &amp; Goals</h4>
+      <ul>
+        <li><b>Correctness:</b> software must meet its requirements.</li>
+        <li><b>Reliability:</b> it should work consistently without failures.</li>
+        <li><b>Efficiency:</b> optimum use of time, memory and resources.</li>
+        <li><b>Maintainability:</b> easy to modify, fix and enhance.</li>
+        <li><b>Usability:</b> easy to learn and use.</li>
+        <li><b>Cost-effectiveness:</b> deliver within budget and schedule.</li>
+        <li><b>Portability &amp; Reusability:</b> usable across platforms and reusable in future projects.</li>
+      </ul>
+
+      <h4>Evolution of Software Engineering</h4>
+      <ol>
+        <li><b>Early period (1950s):</b> programs written for specific machines, no methodology.</li>
+        <li><b>Control-flow / exploratory style (1960s):</b> code grew large and unmanageable — led to the <span class="kw">software crisis</span>.</li>
+        <li><b>Structured / data-flow oriented design (1970s):</b> introduction of structured programming, modularization, SDLC.</li>
+        <li><b>Object-oriented design (1980s–90s):</b> objects, classes, reuse, UML.</li>
+        <li><b>Modern era (2000s onward):</b> Agile, DevOps, cloud, component-based and service-oriented development.</li>
+      </ol>
+
+      <h4>Role in Modern Computing &amp; Software Services</h4>
+      <p>Software engineering powers almost every domain — banking, healthcare, e-commerce, telecom, AI and embedded systems. <span class="kw">Software services</span> (like SaaS, web services, APIs and cloud computing) deliver software functionality over the internet on demand, making software engineering central to digital infrastructure.</p>
+
+      <h4>Software Complexity</h4>
+      <p>Software is inherently complex because of: large size, invisible structure, frequent changes, many interacting components, and lack of physical constraints. Complexity makes software hard to understand, test and maintain.</p>
+
+      <h4>Principles to Manage Complexity</h4>
+      <table>
+        <tr><th>Principle</th><th>Meaning</th></tr>
+        <tr><td>Abstraction</td><td>Focus on essential details, hide the rest.</td></tr>
+        <tr><td>Decomposition / Modularization</td><td>Break a big problem into smaller manageable modules.</td></tr>
+        <tr><td>Hierarchy</td><td>Organize modules in layers/levels.</td></tr>
+        <tr><td>Information hiding</td><td>Hide internal implementation behind interfaces.</td></tr>
+        <tr><td>Reuse</td><td>Use existing tested components.</td></tr>
+      </table>
+
+      <div class="key"><b>Key Point</b>Two principles control complexity: <b>Abstraction</b> (ignore unnecessary detail) and <b>Decomposition</b> (divide and conquer).</div>
+      <div class="tip"><b>Exam Tip</b>Always start with the IEEE definition, then list goals as a bullet list, and finish with abstraction + decomposition for complexity — examiners look for those keywords.</div>
+      <button class="copybtn">Copy notes</button>
+    </div>
+  </div>
+
+  <div class="card" data-q="Q2 software crisis causes impacts how software engineering overcome">
+    <div class="q-head"><div class="q-num">Q2</div><div class="q-text">What is Software Crisis? Discuss its causes, impacts and how Software Engineering helps overcome it.</div><div class="q-toggle">+</div></div>
+    <div class="answer">
+      <h4>Definition</h4>
+      <p>The <span class="kw">Software Crisis</span> (term coined in 1968) refers to the situation in early computing when software projects routinely <b>exceeded budgets, missed deadlines, were unreliable, and were hard to maintain</b> — because hardware power was growing faster than the ability to produce good software.</p>
+
+      <h4>Causes</h4>
+      <ul>
+        <li>Rapid increase in software <b>size and complexity</b>.</li>
+        <li>Lack of proper <b>methodologies and tools</b>.</li>
+        <li>Poor or changing <b>requirements</b>.</li>
+        <li>Inadequate documentation and <b>no project management</b>.</li>
+        <li>Shortage of skilled developers.</li>
+      </ul>
+
+      <h4>Impacts</h4>
+      <ul>
+        <li>Projects went <b>over budget</b> and <b>over schedule</b>.</li>
+        <li>Software was <b>low quality</b>, buggy and unreliable.</li>
+        <li>Difficult and costly <b>maintenance</b>.</li>
+        <li>Many projects were <b>cancelled</b> or never delivered.</li>
+      </ul>
+
+      <h4>How Software Engineering Helps Overcome It</h4>
+      <ol>
+        <li>Use of <span class="kw">SDLC models</span> (Waterfall, Iterative, Agile) for structured development.</li>
+        <li>Formal <b>requirement engineering</b> (SRS).</li>
+        <li>Systematic <b>design, coding standards and modularization</b>.</li>
+        <li>Rigorous <b>testing, verification and validation</b>.</li>
+        <li>Proper <b>project management, estimation (COCOMO) and documentation</b>.</li>
+        <li>CASE tools and reusable components.</li>
+      </ol>
+      <div class="note"><b>Note</b>The software crisis is the historical reason software engineering was born as a discipline.</div>
+      <button class="copybtn">Copy notes</button>
+    </div>
+  </div>
+
+  <div class="card" data-q="Q3 software scope importance projects boundary deliverables">
+    <div class="q-head"><div class="q-num">Q3</div><div class="q-text">Explain Software Scope and its importance in software projects.</div><div class="q-toggle">+</div></div>
+    <div class="answer">
+      <h4>Definition</h4>
+      <p><span class="kw">Software Scope</span> defines the <b>boundaries of the software</b> — what features, functions, data and behaviour the system will (and will not) include. It answers: <i>"What exactly are we building?"</i></p>
+      <h4>Software scope describes</h4>
+      <ul>
+        <li><b>Functions and features</b> to be delivered.</li>
+        <li><b>Inputs, outputs and data</b> handled.</li>
+        <li><b>Performance, constraints and interfaces</b>.</li>
+        <li><b>What is excluded</b> (out of scope).</li>
+      </ul>
+      <h4>Importance</h4>
+      <ol>
+        <li>Provides a clear <b>understanding of deliverables</b> to all stakeholders.</li>
+        <li>Basis for <b>cost, effort and time estimation</b>.</li>
+        <li>Prevents <span class="kw">scope creep</span> (uncontrolled growth of requirements).</li>
+        <li>Helps in <b>planning, scheduling and resource allocation</b>.</li>
+        <li>Defines the <b>acceptance criteria</b> for the final product.</li>
+      </ol>
+      <div class="tip"><b>Exam Tip</b>Link scope to <b>estimation</b> and <b>scope creep</b> — those two terms usually fetch marks.</div>
+      <button class="copybtn">Copy notes</button>
+    </div>
+  </div>
+
+  <div class="card" data-q="Q4 SRS software requirement specification importance characteristics good users black box incomplete ambiguous">
+    <div class="q-head"><div class="q-num">Q4</div><div class="q-text">What is SRS? Discuss its importance, characteristics of a good SRS, categories of users, why SRS is a black-box specification, and how it resolves incomplete and ambiguous requirements.</div><div class="q-toggle">+</div></div>
+    <div class="answer">
+      <h4>Definition</h4>
+      <p>A <span class="kw">Software Requirement Specification (SRS)</span> is a formal document that completely describes the <b>functional and non-functional requirements</b> of the software to be built. It is the agreement (contract) between the customer and the developer.</p>
+
+      <h4>Importance of SRS</h4>
+      <ul>
+        <li>Acts as a <b>contract / agreement</b> between client and developer.</li>
+        <li>Forms the basis for <b>design, coding and testing</b>.</li>
+        <li>Reduces development effort and <b>misunderstandings</b>.</li>
+        <li>Helps in <b>cost and schedule estimation</b>.</li>
+        <li>Provides a <b>baseline for validation</b> (verify the product against SRS).</li>
+      </ul>
+
+      <h4>Characteristics of a Good SRS</h4>
+      <table>
+        <tr><th>Characteristic</th><th>Meaning</th></tr>
+        <tr><td>Correct</td><td>Every requirement is genuinely needed.</td></tr>
+        <tr><td>Complete</td><td>All requirements are stated.</td></tr>
+        <tr><td>Unambiguous</td><td>Each requirement has only one interpretation.</td></tr>
+        <tr><td>Consistent</td><td>No conflicting requirements.</td></tr>
+        <tr><td>Verifiable</td><td>Can be tested/checked.</td></tr>
+        <tr><td>Modifiable</td><td>Easy to change without side effects.</td></tr>
+        <tr><td>Traceable</td><td>Each requirement can be traced to design/code.</td></tr>
+        <tr><td>Ranked</td><td>Requirements prioritized by importance/stability.</td></tr>
+      </table>
+
+      <h4>Categories of Users of SRS</h4>
+      <ul>
+        <li><b>Customers/Clients:</b> to confirm requirements are correct.</li>
+        <li><b>Users:</b> to understand what the system will do.</li>
+        <li><b>Developers/Designers:</b> to design and build the system.</li>
+        <li><b>Testers:</b> to create test cases.</li>
+        <li><b>Project managers:</b> for planning and estimation.</li>
+        <li><b>Maintenance engineers:</b> for future modifications.</li>
+      </ul>
+
+      <h4>Why SRS is a "Black-Box" Specification</h4>
+      <p>SRS describes <b>what</b> the system should do (external behaviour: inputs → outputs) <b>without specifying how</b> it is implemented internally. The internals are hidden like a black box.</p>
+      <p><b>Example:</b> For a calculator, SRS states <i>"Given two numbers and operator '+', output their sum."</i> It does not state which algorithm or data structure performs the addition.</p>
+
+      <h4>Resolving Incomplete &amp; Ambiguous Requirements</h4>
+      <ol>
+        <li><b>Incomplete:</b> through repeated <b>requirement elicitation</b>, interviews, prototyping and reviews, missing requirements are discovered and added.</li>
+        <li><b>Ambiguous:</b> by using <b>precise language, decision tables, diagrams, examples and formal notations</b>, each requirement is given a single clear meaning.</li>
+        <li>Stakeholder <b>review and sign-off</b> validates that requirements are complete and clear.</li>
+      </ol>
+      <div class="key"><b>Key Point</b>SRS = <b>WHAT</b>, not <b>HOW</b>. That single line explains the black-box nature.</div>
+      <button class="copybtn">Copy notes</button>
+    </div>
+  </div>
+
+  <div class="card" data-q="Q5 requirement gathering analysis techniques functional non-functional banking system">
+    <div class="q-head"><div class="q-num">Q5</div><div class="q-text">Explain Requirement Gathering and Requirement Analysis. Discuss gathering techniques and classify Functional vs Non-Functional requirements with examples (Banking System).</div><div class="q-toggle">+</div></div>
+    <div class="answer">
+      <h4>Requirement Gathering (Elicitation)</h4>
+      <p>The process of <b>collecting requirements</b> from stakeholders (customers, users, domain experts) to understand what the system should do.</p>
+
+      <h4>Requirement Analysis</h4>
+      <p>The process of <b>studying, refining and organizing</b> the gathered requirements — removing conflicts, ambiguity and incompleteness — and modelling them clearly before documenting in the SRS.</p>
+
+      <h4>Requirement Gathering Techniques</h4>
+      <ul>
+        <li><b>Interviews:</b> direct questioning of stakeholders.</li>
+        <li><b>Questionnaires/Surveys:</b> collect info from many users.</li>
+        <li><b>Observation:</b> watching users perform current tasks.</li>
+        <li><b>Brainstorming:</b> group idea generation.</li>
+        <li><b>Prototyping:</b> build a sample to clarify requirements.</li>
+        <li><b>Document/record review:</b> study existing system documents.</li>
+        <li><b>Use cases &amp; scenarios:</b> describe system interactions.</li>
+      </ul>
+
+      <h4>Functional vs Non-Functional Requirements</h4>
+      <table>
+        <tr><th>Basis</th><th>Functional (FR)</th><th>Non-Functional (NFR)</th></tr>
+        <tr><td>Meaning</td><td>What the system does (features/functions)</td><td>How well the system performs (quality)</td></tr>
+        <tr><td>Focus</td><td>Behaviour</td><td>Constraints/quality attributes</td></tr>
+        <tr><td>Example type</td><td>Login, transfer money</td><td>Speed, security, reliability</td></tr>
+      </table>
+
+      <h4>Example — Banking System</h4>
+      <p><b>Functional Requirements:</b></p>
+      <ul>
+        <li>Customer can log in with ID and password.</li>
+        <li>Customer can withdraw, deposit and transfer money.</li>
+        <li>System generates account statements.</li>
+        <li>System calculates interest.</li>
+      </ul>
+      <p><b>Non-Functional Requirements:</b></p>
+      <ul>
+        <li><b>Security:</b> transactions must be encrypted.</li>
+        <li><b>Performance:</b> a transaction should complete within 2 seconds.</li>
+        <li><b>Availability:</b> system available 24×7.</li>
+        <li><b>Reliability:</b> no data loss during failures.</li>
+        <li><b>Usability:</b> simple, easy-to-use interface.</li>
+      </ul>
+      <div class="tip"><b>Exam Tip</b>Remember: FR = "<b>functions</b>", NFR = "<b>qualities</b>" (performance, security, usability, reliability, portability).</div>
+      <button class="copybtn">Copy notes</button>
+    </div>
+  </div>
+
+  <div class="card" data-q="Q6 decision trees decision tables documenting functional requirements rules conditions actions">
+    <div class="q-head"><div class="q-num">Q6</div><div class="q-text">Explain how Decision Trees and Decision Tables are used for documenting and specifying functional requirements.</div><div class="q-toggle">+</div></div>
+    <div class="answer">
+      <p>When requirements contain <b>complex logic with many conditions and actions</b>, plain text becomes ambiguous. <span class="kw">Decision trees</span> and <span class="kw">decision tables</span> represent this logic clearly and completely.</p>
+
+      <h4>Decision Tree</h4>
+      <p>A tree-like diagram where <b>branches represent conditions</b> and <b>leaves represent actions</b>. It is easy to read and good when conditions follow in a sequence.</p>
+      <div class="diagram">
+        <svg viewBox="0 0 460 220" xmlns="http://www.w3.org/2000/svg" font-family="sans-serif" font-size="13">
+          <circle cx="60" cy="110" r="10" fill="#7c3aed"/>
+          <text x="40" y="95" font-weight="700">Balance ≥ amount?</text>
+          <line x1="70" y1="105" x2="170" y2="55" stroke="#0ea5e9" stroke-width="2"/>
+          <line x1="70" y1="115" x2="170" y2="165" stroke="#0ea5e9" stroke-width="2"/>
+          <text x="105" y="70" fill="#16a34a" font-weight="700">Yes</text>
+          <text x="105" y="150" fill="#ef4444" font-weight="700">No</text>
+          <rect x="170" y="40" width="130" height="30" rx="6" fill="#e0f2fe" stroke="#0ea5e9"/>
+          <text x="180" y="60">Dispense cash</text>
+          <rect x="170" y="150" width="160" height="30" rx="6" fill="#fae8ff" stroke="#c026d3"/>
+          <text x="180" y="170">Show "Insufficient"</text>
+        </svg>
+        <div class="dia-cap">Decision Tree — ATM withdrawal logic</div>
+      </div>
+
+      <h4>Decision Table</h4>
+      <p>A table with <b>condition stubs</b> (top) and <b>action stubs</b> (bottom). Each column is a <b>rule</b> combining conditions and their resulting actions. It guarantees <b>all combinations</b> are covered.</p>
+      <table>
+        <tr><th>Conditions / Rules</th><th>R1</th><th>R2</th><th>R3</th></tr>
+        <tr><td>Valid PIN?</td><td>N</td><td>Y</td><td>Y</td></tr>
+        <tr><td>Balance ≥ amount?</td><td>-</td><td>N</td><td>Y</td></tr>
+        <tr><td><b>Action:</b> Reject</td><td>✓</td><td></td><td></td></tr>
+        <tr><td><b>Action:</b> Show insufficient</td><td></td><td>✓</td><td></td></tr>
+        <tr><td><b>Action:</b> Dispense cash</td><td></td><td></td><td>✓</td></tr>
+      </table>
+
+      <div class="badge-row">
+        <div class="adv"><b>Advantages</b>Clear, complete, avoid ambiguity, easy to verify all cases.</div>
+        <div class="dis"><b>Decision Tree vs Table</b>Trees are more visual/sequential; tables are more complete for many conditions.</div>
+      </div>
+      <button class="copybtn">Copy notes</button>
+    </div>
+  </div>
+</section>
+
+<!-- ===================== UNIT 2 ===================== -->
+<section class="unit" id="unit2">
+  <span class="unit-tag">Unit 2</span>
+  <h2 class="unit-title">Process Models &amp; Agile</h2>
+
+  <div class="card" data-q="Q7 SDLC software development life cycle purpose models methodologies best model">
+    <div class="q-head"><div class="q-num">Q7</div><div class="q-text">Explain SDLC and its purpose. Discuss popular SDLC models and methodologies. Which model is best and why?</div><div class="q-toggle">+</div></div>
+    <div class="answer">
+      <h4>What is SDLC?</h4>
+      <p>The <span class="kw">Software Development Life Cycle (SDLC)</span> is a structured sequence of <b>phases</b> used to develop software systematically — from initial idea to delivery and maintenance.</p>
+      <h4>Typical SDLC Phases</h4>
+      <div class="diagram">
+        <svg viewBox="0 0 640 70" xmlns="http://www.w3.org/2000/svg" font-family="sans-serif" font-size="12" font-weight="700">
+          <!-- arrow boxes -->
+          <g>
+            <rect x="5"   y="20" width="95" height="34" rx="6" fill="#e0f2fe" stroke="#0ea5e9"/><text x="52" y="42" text-anchor="middle">Requirement</text>
+            <rect x="115" y="20" width="80" height="34" rx="6" fill="#ede9fe" stroke="#7c3aed"/><text x="155" y="42" text-anchor="middle">Design</text>
+            <rect x="210" y="20" width="90" height="34" rx="6" fill="#fae8ff" stroke="#c026d3"/><text x="255" y="42" text-anchor="middle">Coding</text>
+            <rect x="315" y="20" width="80" height="34" rx="6" fill="#e0f2fe" stroke="#0ea5e9"/><text x="355" y="42" text-anchor="middle">Testing</text>
+            <rect x="410" y="20" width="95" height="34" rx="6" fill="#ede9fe" stroke="#7c3aed"/><text x="457" y="42" text-anchor="middle">Deployment</text>
+            <rect x="520" y="20" width="110" height="34" rx="6" fill="#fae8ff" stroke="#c026d3"/><text x="575" y="42" text-anchor="middle">Maintenance</text>
+          </g>
+          <g stroke="#64748b" stroke-width="2" marker-end="url(#ar)">
+            <line x1="100" y1="37" x2="113" y2="37"/><line x1="195" y1="37" x2="208" y2="37"/>
+            <line x1="300" y1="37" x2="313" y2="37"/><line x1="395" y1="37" x2="408" y2="37"/>
+            <line x1="505" y1="37" x2="518" y2="37"/>
+          </g>
+          <defs><marker id="ar" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto"><path d="M0,0 L6,3 L0,6 Z" fill="#64748b"/></marker></defs>
+        </svg>
+        <div class="dia-cap">Standard phases of the Software Development Life Cycle</div>
+      </div>
+      <h4>Purpose of SDLC</h4>
+      <ul>
+        <li>Provides a <b>systematic, planned approach</b> to development.</li>
+        <li>Improves <b>quality, control and predictability</b>.</li>
+        <li>Helps in <b>estimation, scheduling and risk management</b>.</li>
+        <li>Ensures the product meets <b>requirements</b>.</li>
+      </ul>
+      <h4>Popular SDLC Models / Methodologies</h4>
+      <ul>
+        <li><b>Waterfall</b> — linear, sequential.</li>
+        <li><b>Iterative / Incremental</b> — build in increments.</li>
+        <li><b>V-Model</b> — verification &amp; validation focused.</li>
+        <li><b>Prototyping</b> — build sample first.</li>
+        <li><b>Spiral</b> — risk-driven.</li>
+        <li><b>Evolutionary</b> — evolve through versions.</li>
+        <li><b>Agile / Scrum / XP</b> — adaptive, iterative, customer-focused.</li>
+      </ul>
+      <div class="note"><b>Which is best?</b>There is <b>no single best model</b> — it depends on the project. <b>Agile</b> is best for changing requirements and frequent delivery; <b>Waterfall</b> suits small, stable, well-understood projects; <b>Spiral</b> suits large, high-risk projects.</div>
+      <div class="tip"><b>Exam Tip</b>Never say one model is universally best. Always answer: "best depends on requirements stability, project size and risk."</div>
+      <button class="copybtn">Copy notes</button>
+    </div>
+  </div>
+
+  <div class="card" data-q="Q8 classical waterfall iterative waterfall phased development lifecycle phases advantages disadvantages comparison">
+    <div class="q-head"><div class="q-num">Q8</div><div class="q-text">Explain the Classical Waterfall Model, Iterative Waterfall Model and Phased Development Lifecycle — phases, advantages, disadvantages and comparison.</div><div class="q-toggle">+</div></div>
+    <div class="answer">
+      <h4>Classical (Pure) Waterfall Model</h4>
+      <p>A <b>linear, sequential</b> model where each phase must be <b>fully completed before the next begins</b>, and there is <b>no going back</b>.</p>
+      <div class="diagram">
+        <svg viewBox="0 0 420 250" xmlns="http://www.w3.org/2000/svg" font-family="sans-serif" font-size="12" font-weight="700">
+          <g>
+            <rect x="10"  y="10"  width="130" height="32" rx="6" fill="#e0f2fe" stroke="#0ea5e9"/><text x="20" y="30">Requirements</text>
+            <rect x="80"  y="55"  width="130" height="32" rx="6" fill="#ede9fe" stroke="#7c3aed"/><text x="90" y="75">Design</text>
+            <rect x="150" y="100" width="130" height="32" rx="6" fill="#fae8ff" stroke="#c026d3"/><text x="160" y="120">Implementation</text>
+            <rect x="220" y="145" width="130" height="32" rx="6" fill="#e0f2fe" stroke="#0ea5e9"/><text x="230" y="165">Testing</text>
+            <rect x="270" y="190" width="130" height="32" rx="6" fill="#ede9fe" stroke="#7c3aed"/><text x="280" y="210">Maintenance</text>
+          </g>
+          <g stroke="#64748b" stroke-width="2" fill="none" marker-end="url(#a2)">
+            <path d="M75,42 L75,71 L80,71"/><path d="M145,87 L145,116 L150,116"/>
+            <path d="M215,132 L215,161 L220,161"/><path d="M285,177 L285,206 L270,206"/>
+          </g>
+          <defs><marker id="a2" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto"><path d="M0,0 L6,3 L0,6 Z" fill="#64748b"/></marker></defs>
+        </svg>
+        <div class="dia-cap">Classical Waterfall — phases flow downward like a waterfall</div>
+      </div>
+
+      <h4>Iterative Waterfall Model</h4>
+      <p>The practical, improved version — same phases but with <b>feedback paths</b> that allow going <b>back to earlier phases</b> to correct errors found later. This is the most widely used basic model.</p>
+
+      <h4>Phased Development Lifecycle</h4>
+      <p>The product is delivered in <b>phases/parts</b>. The system is divided so that a usable subset is released first and further phases add functionality — combining structured phases with incremental delivery.</p>
+
+      <div class="badge-row">
+        <div class="adv"><b>Advantages (Waterfall)</b>
+          <ul><li>Simple and easy to understand.</li><li>Well documented, easy to manage.</li><li>Good for small, stable projects.</li></ul>
+        </div>
+        <div class="dis"><b>Disadvantages (Waterfall)</b>
+          <ul><li>No working software until late.</li><li>Poor for changing requirements.</li><li>Hard to go back (classical).</li><li>Risk found very late.</li></ul>
+        </div>
+      </div>
+
+      <h4>Comparison</h4>
+      <table>
+        <tr><th>Basis</th><th>Classical Waterfall</th><th>Iterative Waterfall</th><th>Phased Development</th></tr>
+        <tr><td>Feedback</td><td>None</td><td>Phase-to-phase feedback</td><td>Across phases/releases</td></tr>
+        <tr><td>Delivery</td><td>One final product</td><td>One final product</td><td>In multiple phases</td></tr>
+        <tr><td>Change handling</td><td>Very poor</td><td>Better</td><td>Good</td></tr>
+        <tr><td>Use</td><td>Theoretical/ideal</td><td>Practical projects</td><td>Large staged projects</td></tr>
+      </table>
+      <button class="copybtn">Copy notes</button>
+    </div>
+  </div>
+
+  <div class="card" data-q="Q9 V model diagram suitability advantages disadvantages compare incremental verification validation">
+    <div class="q-head"><div class="q-num">Q9</div><div class="q-text">Explain the V-Model with diagram, suitability, advantages and disadvantages. Compare it with the Incremental Development Model.</div><div class="q-toggle">+</div></div>
+    <div class="answer">
+      <h4>V-Model (Verification &amp; Validation Model)</h4>
+      <p>The <span class="kw">V-Model</span> is an extension of the waterfall model where <b>every development phase (left side) is associated with a corresponding testing phase (right side)</b>. Development goes down, testing goes up, forming a "V".</p>
+      <div class="diagram">
+        <svg viewBox="0 0 480 240" xmlns="http://www.w3.org/2000/svg" font-family="sans-serif" font-size="11.5" font-weight="700">
+          <!-- left side -->
+          <rect x="20"  y="10"  width="120" height="28" rx="5" fill="#e0f2fe" stroke="#0ea5e9"/><text x="28" y="28">Requirements</text>
+          <rect x="60"  y="55"  width="120" height="28" rx="5" fill="#e0f2fe" stroke="#0ea5e9"/><text x="70" y="73">System Design</text>
+          <rect x="100" y="100" width="120" height="28" rx="5" fill="#e0f2fe" stroke="#0ea5e9"/><text x="108" y="118">Module Design</text>
+          <rect x="180" y="160" width="120" height="28" rx="5" fill="#fae8ff" stroke="#c026d3"/><text x="200" y="178">Coding</text>
+          <!-- right side -->
+          <rect x="340" y="10"  width="120" height="28" rx="5" fill="#ede9fe" stroke="#7c3aed"/><text x="350" y="28">Acceptance Test</text>
+          <rect x="300" y="55"  width="120" height="28" rx="5" fill="#ede9fe" stroke="#7c3aed"/><text x="318" y="73">System Test</text>
+          <rect x="260" y="100" width="120" height="28" rx="5" fill="#ede9fe" stroke="#7c3aed"/><text x="280" y="118">Integration Test</text>
+          <rect x="200" y="160" width="0" height="0"/>
+          <rect x="60"  y="200" width="0" height="0"/>
+          <rect x="160" y="125" width="0" height="0"/>
+          <!-- dashed V&V links -->
+          <g stroke="#94a3b8" stroke-dasharray="5 4" stroke-width="1.5">
+            <line x1="140" y1="24" x2="340" y2="24"/>
+            <line x1="180" y1="69" x2="300" y2="69"/>
+            <line x1="220" y1="114" x2="260" y2="114"/>
+          </g>
+          <!-- V outline -->
+          <polyline points="80,38 240,188 400,38" fill="none" stroke="#0ea5e9" stroke-width="1" opacity=".4"/>
+          <text x="30" y="150" fill="#0ea5e9">Verification</text>
+          <text x="380" y="150" fill="#7c3aed">Validation</text>
+        </svg>
+        <div class="dia-cap">V-Model — each design phase maps to a testing phase</div>
+      </div>
+      <h4>Suitability</h4>
+      <ul><li>Projects with <b>clear, fixed requirements</b>.</li><li>Small to medium, <b>safety-critical</b> systems (medical, defence).</li><li>Where strong <b>testing/quality</b> is required.</li></ul>
+      <div class="badge-row">
+        <div class="adv"><b>Advantages</b><ul><li>Testing planned early (each phase).</li><li>High quality, fewer defects.</li><li>Simple and disciplined.</li></ul></div>
+        <div class="dis"><b>Disadvantages</b><ul><li>Rigid, poor for changing requirements.</li><li>No early prototype.</li><li>Costly to handle late changes.</li></ul></div>
+      </div>
+      <h4>V-Model vs Incremental Model</h4>
+      <table>
+        <tr><th>Basis</th><th>V-Model</th><th>Incremental Model</th></tr>
+        <tr><td>Approach</td><td>Sequential with parallel testing</td><td>Build in increments/parts</td></tr>
+        <tr><td>Requirements</td><td>Must be fixed early</td><td>Can evolve</td></tr>
+        <tr><td>Delivery</td><td>One final product</td><td>Working increments delivered</td></tr>
+        <tr><td>Flexibility</td><td>Low</td><td>High</td></tr>
+        <tr><td>Best for</td><td>Critical, stable projects</td><td>Large projects with evolving needs</td></tr>
+      </table>
+      <button class="copybtn">Copy notes</button>
+    </div>
+  </div>
+
+  <div class="card" data-q="Q10 incremental model suitability merits limitations increments">
+    <div class="q-head"><div class="q-num">Q10</div><div class="q-text">Explain the Incremental Model with its suitability, merits and limitations.</div><div class="q-toggle">+</div></div>
+    <div class="answer">
+      <h4>Definition</h4>
+      <p>In the <span class="kw">Incremental Model</span>, the software is built and delivered in <b>increments (parts)</b>. Each increment adds functionality to the previous one, and each goes through requirement, design, code and test. The first increment is usually the <b>core product</b>.</p>
+      <div class="diagram">
+        <svg viewBox="0 0 460 150" xmlns="http://www.w3.org/2000/svg" font-family="sans-serif" font-size="11" font-weight="700">
+          <g>
+            <rect x="10" y="100" width="130" height="34" rx="5" fill="#e0f2fe" stroke="#0ea5e9"/><text x="35" y="121">Increment 1</text>
+            <rect x="160" y="60" width="130" height="34" rx="5" fill="#ede9fe" stroke="#7c3aed"/><text x="185" y="81">Increment 2</text>
+            <rect x="310" y="20" width="130" height="34" rx="5" fill="#fae8ff" stroke="#c026d3"/><text x="335" y="41">Increment 3</text>
+          </g>
+          <g stroke="#64748b" stroke-width="2" marker-end="url(#a3)">
+            <line x1="140" y1="110" x2="158" y2="88"/><line x1="290" y1="70" x2="308" y2="48"/>
+          </g>
+          <text x="10" y="148" fill="#64748b" font-weight="400">Core delivered first → features added in each release</text>
+          <defs><marker id="a3" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto"><path d="M0,0 L6,3 L0,6 Z" fill="#64748b"/></marker></defs>
+        </svg>
+        <div class="dia-cap">Incremental Model — software grows increment by increment</div>
+      </div>
+      <h4>Suitability</h4>
+      <ul><li>Large projects that can be <b>divided into parts</b>.</li><li>When <b>early partial delivery</b> is needed.</li><li>Requirements are <b>reasonably known</b> but may be refined.</li></ul>
+      <div class="badge-row">
+        <div class="adv"><b>Merits</b><ul><li>Working software delivered early.</li><li>Easier to test and debug smaller parts.</li><li>Flexible — feedback used in next increment.</li><li>Lower initial delivery risk.</li></ul></div>
+        <div class="dis"><b>Limitations</b><ul><li>Needs good planning and architecture.</li><li>Total cost may be higher.</li><li>Not ideal if requirements are completely unclear.</li></ul></div>
+      </div>
+      <button class="copybtn">Copy notes</button>
+    </div>
+  </div>
+
+  <div class="card" data-q="Q11 evolutionary model merits limitations versions evolve">
+    <div class="q-head"><div class="q-num">Q11</div><div class="q-text">Explain the Evolutionary Model and its merits and limitations.</div><div class="q-toggle">+</div></div>
+    <div class="answer">
+      <h4>Definition</h4>
+      <p>The <span class="kw">Evolutionary Model</span> develops software through <b>successive versions/builds</b>. An initial version is built quickly, given to users, and then <b>refined and expanded</b> based on feedback until the complete system evolves. It combines iteration with incremental delivery.</p>
+      <h4>Suitability</h4>
+      <ul><li>Requirements are <b>not fully known</b> at the start.</li><li>Large projects where user feedback is valuable.</li><li>Object-oriented and rapidly changing domains.</li></ul>
+      <div class="badge-row">
+        <div class="adv"><b>Merits</b><ul><li>Handles changing/unclear requirements well.</li><li>Early user feedback improves the product.</li><li>Working versions available early.</li></ul></div>
+        <div class="dis"><b>Limitations</b><ul><li>Hard to plan cost and schedule.</li><li>Poor structure if not managed carefully.</li><li>Continuous changes may degrade design.</li></ul></div>
+      </div>
+      <div class="note"><b>Note</b>Incremental adds new features; Evolutionary refines/grows the same product through versions.</div>
+      <button class="copybtn">Copy notes</button>
+    </div>
+  </div>
+
+  <div class="card" data-q="Q12 prototyping model types applications benefits selection criteria case study throwaway evolutionary">
+    <div class="q-head"><div class="q-num">Q12</div><div class="q-text">Explain the Prototyping Model — its types, applications, benefits, selection criteria, with a suitable case study.</div><div class="q-toggle">+</div></div>
+    <div class="answer">
+      <h4>Definition</h4>
+      <p>In the <span class="kw">Prototyping Model</span>, a <b>working prototype (sample model)</b> of the system is built quickly and shown to the user. Based on feedback, it is refined repeatedly until requirements are clear, then the final product is built.</p>
+      <div class="diagram">
+        <svg viewBox="0 0 420 170" xmlns="http://www.w3.org/2000/svg" font-family="sans-serif" font-size="11" font-weight="700">
+          <rect x="20" y="70" width="90" height="32" rx="16" fill="#e0f2fe" stroke="#0ea5e9"/><text x="35" y="90">Gather reqs</text>
+          <rect x="150" y="20" width="100" height="32" rx="16" fill="#ede9fe" stroke="#7c3aed"/><text x="165" y="40">Build prototype</text>
+          <rect x="300" y="70" width="100" height="32" rx="16" fill="#fae8ff" stroke="#c026d3"/><text x="312" y="90">User evaluates</text>
+          <rect x="150" y="120" width="100" height="32" rx="16" fill="#e0f2fe" stroke="#0ea5e9"/><text x="160" y="140">Refine prototype</text>
+          <g stroke="#64748b" stroke-width="2" fill="none" marker-end="url(#a4)">
+            <path d="M110,82 L148,46"/><path d="M250,40 L298,80"/><path d="M300,92 L252,128"/><path d="M150,134 L110,98"/>
+          </g>
+          <defs><marker id="a4" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto"><path d="M0,0 L6,3 L0,6 Z" fill="#64748b"/></marker></defs>
+        </svg>
+        <div class="dia-cap">Prototyping cycle — build, evaluate, refine until requirements freeze</div>
+      </div>
+      <h4>Types of Prototyping</h4>
+      <ol>
+        <li><b>Throwaway / Rapid:</b> prototype is discarded after requirements are clear; final system built fresh.</li>
+        <li><b>Evolutionary:</b> the prototype is refined and gradually becomes the final product.</li>
+        <li><b>Incremental:</b> system built as several prototypes merged together.</li>
+        <li><b>Extreme prototyping:</b> mainly used for web development (static → functional → services).</li>
+      </ol>
+      <h4>Applications &amp; Selection Criteria</h4>
+      <ul><li>When <b>requirements are unclear/changing</b>.</li><li>For <b>UI-heavy</b> systems.</li><li>When user involvement is high.</li><li>New, innovative or risky projects.</li></ul>
+      <div class="badge-row">
+        <div class="adv"><b>Benefits</b><ul><li>Clarifies requirements early.</li><li>Reduces misunderstanding &amp; rework.</li><li>High user satisfaction.</li></ul></div>
+        <div class="dis"><b>Drawbacks</b><ul><li>Can increase cost/time.</li><li>Users may mistake prototype for final.</li><li>Poor documentation if rushed.</li></ul></div>
+      </div>
+      <div class="tip"><b>Case Study</b>Building an <b>online food-ordering app</b>: the team first makes a clickable UI prototype of the menu and cart, shows it to the restaurant owner, gathers feedback (add filters, payment options), refines it 2–3 times, then develops the full product. This avoids building the wrong system.</div>
+      <button class="copybtn">Copy notes</button>
+    </div>
+  </div>
+
+  <div class="card" data-q="Q13 agile methodology principles lifecycle compare waterfall incremental manifesto sprints">
+    <div class="q-head"><div class="q-num">Q13</div><div class="q-text">Explain Agile Methodology, its principles and lifecycle. Compare Agile with Waterfall and Incremental Models.</div><div class="q-toggle">+</div></div>
+    <div class="answer">
+      <h4>Definition</h4>
+      <p><span class="kw">Agile</span> is an <b>iterative and incremental</b> software development approach that focuses on <b>customer collaboration, working software, flexibility and rapid delivery</b> in short cycles called <b>iterations/sprints</b>.</p>
+      <h4>Agile Manifesto Values</h4>
+      <ul>
+        <li><b>Individuals &amp; interactions</b> over processes and tools.</li>
+        <li><b>Working software</b> over comprehensive documentation.</li>
+        <li><b>Customer collaboration</b> over contract negotiation.</li>
+        <li><b>Responding to change</b> over following a plan.</li>
+      </ul>
+      <h4>Key Agile Principles</h4>
+      <ol>
+        <li>Satisfy the customer through <b>early and continuous delivery</b>.</li>
+        <li>Welcome <b>changing requirements</b>, even late.</li>
+        <li>Deliver working software <b>frequently</b>.</li>
+        <li>Daily collaboration between business and developers.</li>
+        <li><b>Simplicity</b> and continuous attention to technical excellence.</li>
+        <li>Self-organizing teams and regular reflection (retrospectives).</li>
+      </ol>
+      <h4>Agile Lifecycle</h4>
+      <div class="diagram">
+        <svg viewBox="0 0 560 70" xmlns="http://www.w3.org/2000/svg" font-family="sans-serif" font-size="11" font-weight="700">
+          <g>
+            <rect x="5" y="20" width="70" height="32" rx="6" fill="#e0f2fe" stroke="#0ea5e9"/><text x="40" y="40" text-anchor="middle">Plan</text>
+            <rect x="95" y="20" width="80" height="32" rx="6" fill="#ede9fe" stroke="#7c3aed"/><text x="135" y="40" text-anchor="middle">Design</text>
+            <rect x="195" y="20" width="80" height="32" rx="6" fill="#fae8ff" stroke="#c026d3"/><text x="235" y="40" text-anchor="middle">Develop</text>
+            <rect x="295" y="20" width="70" height="32" rx="6" fill="#e0f2fe" stroke="#0ea5e9"/><text x="330" y="40" text-anchor="middle">Test</text>
+            <rect x="385" y="20" width="80" height="32" rx="6" fill="#ede9fe" stroke="#7c3aed"/><text x="425" y="40" text-anchor="middle">Release</text>
+            <rect x="485" y="20" width="70" height="32" rx="6" fill="#fae8ff" stroke="#c026d3"/><text x="520" y="40" text-anchor="middle">Feedback</text>
+          </g>
+          <text x="160" y="65" fill="#64748b" font-weight="400">↺ repeat every sprint (1–4 weeks)</text>
+        </svg>
+        <div class="dia-cap">Agile lifecycle — short repeating sprints with feedback</div>
+      </div>
+      <h4>Comparison</h4>
+      <table>
+        <tr><th>Basis</th><th>Agile</th><th>Waterfall</th><th>Incremental</th></tr>
+        <tr><td>Approach</td><td>Iterative &amp; adaptive</td><td>Linear/sequential</td><td>Build in increments</td></tr>
+        <tr><td>Requirements</td><td>Can change anytime</td><td>Fixed early</td><td>Mostly known</td></tr>
+        <tr><td>Customer involvement</td><td>Continuous</td><td>Only at start/end</td><td>At each increment</td></tr>
+        <tr><td>Delivery</td><td>Every sprint</td><td>At the end</td><td>Per increment</td></tr>
+        <tr><td>Flexibility</td><td>Very high</td><td>Low</td><td>Medium</td></tr>
+      </table>
+      <button class="copybtn">Copy notes</button>
+    </div>
+  </div>
+
+  <div class="card" data-q="Q14 scrum framework lifecycle process model sprint backlog roles diagram master product owner">
+    <div class="q-head"><div class="q-num">Q14</div><div class="q-text">Explain Scrum Framework, Scrum Lifecycle and Scrum Process Model with neat diagram.</div><div class="q-toggle">+</div></div>
+    <div class="answer">
+      <h4>What is Scrum?</h4>
+      <p><span class="kw">Scrum</span> is the most popular <b>Agile framework</b> that develops software in fixed-length iterations called <b>Sprints</b> (usually 2–4 weeks), delivering a potentially shippable increment each sprint.</p>
+      <h4>Scrum Roles</h4>
+      <ul>
+        <li><b>Product Owner:</b> manages the product backlog, represents the customer.</li>
+        <li><b>Scrum Master:</b> facilitates the process, removes obstacles.</li>
+        <li><b>Development Team:</b> builds the increment.</li>
+      </ul>
+      <h4>Scrum Artifacts &amp; Events</h4>
+      <ul>
+        <li><b>Product Backlog:</b> prioritized list of all requirements.</li>
+        <li><b>Sprint Backlog:</b> items chosen for the current sprint.</li>
+        <li><b>Sprint Planning, Daily Scrum (stand-up), Sprint Review, Sprint Retrospective.</b></li>
+      </ul>
+      <div class="diagram">
+        <svg viewBox="0 0 520 200" xmlns="http://www.w3.org/2000/svg" font-family="sans-serif" font-size="11" font-weight="700">
+          <rect x="10" y="80" width="110" height="44" rx="6" fill="#e0f2fe" stroke="#0ea5e9"/><text x="20" y="100">Product</text><text x="20" y="116">Backlog</text>
+          <rect x="160" y="80" width="110" height="44" rx="6" fill="#ede9fe" stroke="#7c3aed"/><text x="172" y="100">Sprint</text><text x="172" y="116">Backlog</text>
+          <circle cx="360" cy="100" r="44" fill="#fae8ff" stroke="#c026d3" stroke-width="2"/><text x="335" y="96">Sprint</text><text x="333" y="112">2–4 wks</text>
+          <rect x="450" y="80" width="60" height="44" rx="6" fill="#e0f2fe" stroke="#0ea5e9"/><text x="458" y="100">Incre-</text><text x="458" y="116">ment</text>
+          <g stroke="#64748b" stroke-width="2" fill="none" marker-end="url(#a5)">
+            <line x1="120" y1="102" x2="158" y2="102"/>
+            <line x1="270" y1="102" x2="313" y2="102"/>
+            <line x1="404" y1="102" x2="448" y2="102"/>
+          </g>
+          <path d="M360,144 A60,55 0 0 1 360,56" stroke="#c026d3" stroke-width="2" fill="none" marker-end="url(#a5)" opacity=".7"/>
+          <text x="300" y="170" fill="#c026d3" font-weight="400">Daily Scrum loop</text>
+          <defs><marker id="a5" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto"><path d="M0,0 L6,3 L0,6 Z" fill="#64748b"/></marker></defs>
+        </svg>
+        <div class="dia-cap">Scrum Process Model — backlog → sprint → increment</div>
+      </div>
+      <h4>Scrum Lifecycle (steps)</h4>
+      <ol>
+        <li>Product Owner creates the <b>Product Backlog</b>.</li>
+        <li><b>Sprint Planning</b> selects items into the Sprint Backlog.</li>
+        <li>Team works during the <b>Sprint</b>, holding <b>Daily Scrums</b>.</li>
+        <li><b>Sprint Review</b> demonstrates the increment.</li>
+        <li><b>Sprint Retrospective</b> improves the process; next sprint begins.</li>
+      </ol>
+      <button class="copybtn">Copy notes</button>
+    </div>
+  </div>
+
+  <div class="card" data-q="Q15 extreme programming XP key practices pair programming TDD refactoring">
+    <div class="q-head"><div class="q-num">Q15</div><div class="q-text">What is Extreme Programming (XP)? Explain its key practices.</div><div class="q-toggle">+</div></div>
+    <div class="answer">
+      <h4>Definition</h4>
+      <p><span class="kw">Extreme Programming (XP)</span> is an Agile method that emphasizes <b>technical excellence, customer satisfaction and frequent releases</b> through disciplined engineering practices. It is best for projects with <b>rapidly changing requirements</b>.</p>
+      <h4>Key Practices</h4>
+      <ul>
+        <li><b>Pair Programming:</b> two developers write code at one workstation.</li>
+        <li><b>Test-Driven Development (TDD):</b> write tests before code.</li>
+        <li><b>Continuous Integration:</b> integrate and test code frequently.</li>
+        <li><b>Refactoring:</b> continuously improve code structure without changing behaviour.</li>
+        <li><b>Small/Frequent Releases:</b> deliver in short cycles.</li>
+        <li><b>Simple Design:</b> keep design as simple as possible.</li>
+        <li><b>On-site Customer:</b> a customer representative is always available.</li>
+        <li><b>Collective Code Ownership &amp; Coding Standards.</b></li>
+        <li><b>Sustainable Pace (40-hour week).</b></li>
+      </ul>
+      <h4>XP Values</h4>
+      <p>Communication, Simplicity, Feedback, Courage, Respect.</p>
+      <div class="tip"><b>Exam Tip</b>The two most-asked XP practices are <b>Pair Programming</b> and <b>Test-Driven Development</b>.</div>
+      <button class="copybtn">Copy notes</button>
+    </div>
+  </div>
+
+  <div class="card" data-q="Q16 process model risk management spiral advantages disadvantages risk driven">
+    <div class="q-head"><div class="q-num">Q16</div><div class="q-text">Which software process model is best suited for risk management? Explain with advantages and disadvantages.</div><div class="q-toggle">+</div></div>
+    <div class="answer">
+      <h4>Answer: The Spiral Model</h4>
+      <p>The <span class="kw">Spiral Model</span> (by Barry Boehm) is the best model for <b>risk management</b> because it is <b>risk-driven</b> — each loop of the spiral explicitly includes <b>risk analysis and resolution</b> before proceeding.</p>
+      <h4>Four Quadrants of Each Spiral Loop</h4>
+      <ol>
+        <li><b>Determine objectives</b> and constraints.</li>
+        <li><b>Risk analysis</b> — identify and resolve risks (build prototypes).</li>
+        <li><b>Develop &amp; test</b> the next version.</li>
+        <li><b>Plan</b> the next iteration.</li>
+      </ol>
+      <div class="diagram">
+        <svg viewBox="0 0 300 260" xmlns="http://www.w3.org/2000/svg" font-family="sans-serif" font-size="11" font-weight="700">
+          <line x1="150" y1="10" x2="150" y2="250" stroke="#cbd5e1"/>
+          <line x1="20" y1="130" x2="280" y2="130" stroke="#cbd5e1"/>
+          <path d="M150,130 m0,-8 a8,8 0 1,1 -8,8 a20,20 0 1,1 20,20 a36,36 0 1,1 -36,-36 a54,54 0 1,1 54,54 a72,72 0 1,1 -72,-72 a92,92 0 1,1 92,92" fill="none" stroke="#7c3aed" stroke-width="2.5"/>
+          <text x="158" y="22" fill="#0ea5e9">1. Objectives</text>
+          <text x="200" y="142" fill="#c026d3">2. Risk analysis</text>
+          <text x="40" y="248" fill="#16a34a">3. Develop &amp; test</text>
+          <text x="10" y="125" fill="#7c3aed">4. Plan next</text>
+        </svg>
+        <div class="dia-cap">Spiral Model — risk analysis in every loop</div>
+      </div>
+      <div class="badge-row">
+        <div class="adv"><b>Advantages</b><ul><li>Strong risk management.</li><li>Good for large, complex, high-risk projects.</li><li>Early prototypes; flexible.</li></ul></div>
+        <div class="dis"><b>Disadvantages</b><ul><li>Complex and costly.</li><li>Needs risk-assessment expertise.</li><li>Not suitable for small projects.</li></ul></div>
+      </div>
+      <button class="copybtn">Copy notes</button>
+    </div>
+  </div>
+</section>
+
+<!-- ===================== UNIT 3 ===================== -->
+<section class="unit" id="unit3">
+  <span class="unit-tag">Unit 3</span>
+  <h2 class="unit-title">Design Concepts</h2>
+
+  <div class="card" data-q="Q17 exploratory style programming limitations compare software engineering approach ad-hoc">
+    <div class="q-head"><div class="q-num">Q17</div><div class="q-text">Explain Exploratory Style Programming. Discuss its limitations and compare it with the Software Engineering approach.</div><div class="q-toggle">+</div></div>
+    <div class="answer">
+      <h4>Definition</h4>
+      <p><span class="kw">Exploratory style programming</span> (also called the build-and-fix or ad-hoc approach) is an <b>unstructured way of writing code</b> where the programmer directly starts coding based on intuition, <b>without proper requirement analysis, design or documentation</b>, and keeps fixing it by trial and error.</p>
+      <h4>Limitations of Exploratory Style</h4>
+      <ul>
+        <li>Becomes <b>unmanageable</b> as program size grows.</li>
+        <li>Very <b>hard to understand, debug and maintain</b>.</li>
+        <li>No documentation → knowledge lost.</li>
+        <li>Cost and effort grow <b>exponentially</b> with size.</li>
+        <li>Poor quality, unreliable, error-prone.</li>
+        <li>No reusability or proper structure.</li>
+      </ul>
+      <h4>Exploratory vs Software Engineering Approach</h4>
+      <table>
+        <tr><th>Basis</th><th>Exploratory Style</th><th>Software Engineering</th></tr>
+        <tr><td>Approach</td><td>Ad-hoc, intuition-based</td><td>Systematic, disciplined</td></tr>
+        <tr><td>Planning/Design</td><td>None or minimal</td><td>Proper requirement &amp; design</td></tr>
+        <tr><td>Documentation</td><td>Absent</td><td>Well documented</td></tr>
+        <tr><td>Suitable size</td><td>Very small programs</td><td>Large, complex systems</td></tr>
+        <tr><td>Maintenance</td><td>Very difficult</td><td>Easy</td></tr>
+        <tr><td>Cost with growth</td><td>Grows rapidly</td><td>Controlled</td></tr>
+      </table>
+      <div class="note"><b>Note</b>Exploratory programming works only for tiny programs; software engineering is needed for real-world large software.</div>
+      <button class="copybtn">Copy notes</button>
+    </div>
+  </div>
+
+  <div class="card" data-q="Q18 structured analysis structured design differentiate DFD structure charts">
+    <div class="q-head"><div class="q-num">Q18</div><div class="q-text">Explain Structured Analysis and Structured Design. Differentiate between them with examples. Also explain the role of DFD and Structure Charts.</div><div class="q-toggle">+</div></div>
+    <div class="answer">
+      <h4>Structured Analysis (SA)</h4>
+      <p>A technique to <b>understand and model the problem</b> by analysing the flow and transformation of data in the system. Its main tool is the <span class="kw">Data Flow Diagram (DFD)</span>. It answers <b>"WHAT" the system does</b>.</p>
+      <h4>Structured Design (SD)</h4>
+      <p>A technique to <b>convert the analysis model into a software structure</b> (modules and their relationships). Its main tool is the <span class="kw">Structure Chart</span>. It answers <b>"HOW" the system is organized</b>.</p>
+      <h4>Difference</h4>
+      <table>
+        <tr><th>Basis</th><th>Structured Analysis</th><th>Structured Design</th></tr>
+        <tr><td>Goal</td><td>Understand the problem (WHAT)</td><td>Plan the solution (HOW)</td></tr>
+        <tr><td>Main tool</td><td>DFD, data dictionary</td><td>Structure chart</td></tr>
+        <tr><td>Output</td><td>Logical model of data flow</td><td>Module hierarchy</td></tr>
+        <tr><td>Focus</td><td>Data &amp; processes</td><td>Modules &amp; control</td></tr>
+      </table>
+      <h4>Role of DFD &amp; Structure Charts</h4>
+      <ul>
+        <li><b>DFD:</b> shows how data flows between processes, stores and external entities — used in analysis.</li>
+        <li><b>Structure Chart:</b> shows the hierarchy of modules and how control/data passes between them — used in design. The DFD is transformed into a structure chart using <b>transform analysis</b> and <b>transaction analysis</b>.</li>
+      </ul>
+      <div class="diagram">
+        <svg viewBox="0 0 320 160" xmlns="http://www.w3.org/2000/svg" font-family="sans-serif" font-size="11" font-weight="700">
+          <rect x="115" y="10" width="90" height="30" rx="5" fill="#ede9fe" stroke="#7c3aed"/><text x="135" y="29">Main</text>
+          <rect x="25" y="100" width="90" height="30" rx="5" fill="#e0f2fe" stroke="#0ea5e9"/><text x="45" y="119">Input</text>
+          <rect x="125" y="100" width="90" height="30" rx="5" fill="#e0f2fe" stroke="#0ea5e9"/><text x="140" y="119">Process</text>
+          <rect x="225" y="100" width="90" height="30" rx="5" fill="#e0f2fe" stroke="#0ea5e9"/><text x="245" y="119">Output</text>
+          <g stroke="#64748b" stroke-width="1.6">
+            <line x1="160" y1="40" x2="70" y2="100"/><line x1="160" y1="40" x2="170" y2="100"/><line x1="160" y1="40" x2="270" y2="100"/>
+          </g>
+        </svg>
+        <div class="dia-cap">Structure Chart — module hierarchy with control flow</div>
+      </div>
+      <button class="copybtn">Copy notes</button>
+    </div>
+  </div>
+
+  <div class="card" data-q="Q19 function oriented design FOD object oriented design OOD top down bottom up approaches">
+    <div class="q-head"><div class="q-num">Q19</div><div class="q-text">Differentiate Function-Oriented Design (FOD) and Object-Oriented Design (OOD) with examples. Explain Top-Down and Bottom-Up approaches.</div><div class="q-toggle">+</div></div>
+    <div class="answer">
+      <h4>FOD vs OOD</h4>
+      <table>
+        <tr><th>Basis</th><th>Function-Oriented Design (FOD)</th><th>Object-Oriented Design (OOD)</th></tr>
+        <tr><td>Basic unit</td><td>Functions/modules</td><td>Objects &amp; classes</td></tr>
+        <tr><td>Focus</td><td>Processes/functions</td><td>Data + behaviour together</td></tr>
+        <tr><td>Decomposition</td><td>By function</td><td>By objects</td></tr>
+        <tr><td>Data</td><td>Shared/global, separate from functions</td><td>Encapsulated inside objects</td></tr>
+        <tr><td>Reusability</td><td>Lower</td><td>High (inheritance, polymorphism)</td></tr>
+        <tr><td>Example</td><td>C, structured programming, DFD</td><td>Java, C++, UML class diagram</td></tr>
+      </table>
+      <p><b>Example:</b> In FOD a "Library System" is designed as functions like <i>issueBook(), returnBook()</i>. In OOD it is designed as objects like <i>Book, Member, Librarian</i> each holding their own data and methods.</p>
+      <h4>Top-Down Approach</h4>
+      <p>Start from the <b>main/high-level module</b> and break it down into smaller sub-modules step by step (decomposition). Used in <b>structured/function-oriented design</b>.</p>
+      <h4>Bottom-Up Approach</h4>
+      <p>Start by building <b>small basic/reusable modules</b> first and combine (compose) them into larger modules. Common in <b>object-oriented and reuse-based design</b>.</p>
+      <table>
+        <tr><th>Top-Down</th><th>Bottom-Up</th></tr>
+        <tr><td>Whole → parts</td><td>Parts → whole</td></tr>
+        <tr><td>Decomposition</td><td>Composition</td></tr>
+        <tr><td>Uses stubs in testing</td><td>Uses drivers in testing</td></tr>
+      </table>
+      <button class="copybtn">Copy notes</button>
+    </div>
+  </div>
+
+  <div class="card" data-q="Q20 modularization module independence coupling cohesion software quality design strategy">
+    <div class="q-head"><div class="q-num">Q20</div><div class="q-text">What is Modularization? Explain module independence, coupling and cohesion. Discuss their role in software quality and design strategy.</div><div class="q-toggle">+</div></div>
+    <div class="answer">
+      <h4>Modularization</h4>
+      <p><span class="kw">Modularization</span> is the process of <b>dividing software into separate, manageable modules</b>, each performing a well-defined function. It applies the principle of <b>divide and conquer</b>.</p>
+      <h4>Module Independence</h4>
+      <p>A good design has <b>independent modules</b> — each module can be developed, tested and changed without affecting others. Module independence is measured by two criteria: <b>coupling</b> and <b>cohesion</b>.</p>
+      <h4>Coupling</h4>
+      <p><span class="kw">Coupling</span> = the degree of <b>interdependence between modules</b>. <b>Goal: LOW coupling</b> (modules should be loosely connected).</p>
+      <h4>Cohesion</h4>
+      <p><span class="kw">Cohesion</span> = the degree to which elements <b>within a single module</b> belong together. <b>Goal: HIGH cohesion</b> (a module should do one well-defined task).</p>
+      <div class="diagram">
+        <svg viewBox="0 0 380 110" xmlns="http://www.w3.org/2000/svg" font-family="sans-serif" font-size="12" font-weight="700">
+          <circle cx="70" cy="55" r="38" fill="#e0f2fe" stroke="#0ea5e9" stroke-width="2"/><text x="42" y="50">HIGH</text><text x="38" y="68">Cohesion</text>
+          <circle cx="280" cy="55" r="30" fill="#fae8ff" stroke="#c026d3"/><circle cx="340" cy="55" r="30" fill="#fae8ff" stroke="#c026d3"/>
+          <line x1="305" y1="55" x2="315" y2="55" stroke="#64748b" stroke-dasharray="3 3"/>
+          <text x="248" y="100" fill="#c026d3">LOW Coupling (weak link)</text>
+          <text x="40" y="105" fill="#0ea5e9">within a module</text>
+        </svg>
+        <div class="dia-cap">Aim for HIGH cohesion within modules and LOW coupling between them</div>
+      </div>
+      <h4>Role in Software Quality &amp; Design Strategy</h4>
+      <ul>
+        <li><b>Maintainability:</b> low coupling means changes stay local.</li>
+        <li><b>Reusability:</b> highly cohesive modules are easy to reuse.</li>
+        <li><b>Testability:</b> independent modules are easy to test separately.</li>
+        <li><b>Understandability &amp; Reliability:</b> well-defined modules reduce errors.</li>
+      </ul>
+      <div class="key"><b>Key Point (Golden Rule of Design)</b>A good design has <b>LOW coupling</b> and <b>HIGH cohesion</b>.</div>
+      <button class="copybtn">Copy notes</button>
+    </div>
+  </div>
+
+  <div class="card" data-q="Q21 types of cohesion functional sequential communicational procedural temporal logical coincidental examples">
+    <div class="q-head"><div class="q-num">Q21</div><div class="q-text">Explain various types of Cohesion with examples.</div><div class="q-toggle">+</div></div>
+    <div class="answer">
+      <p><span class="kw">Cohesion</span> measures how strongly the elements inside a module relate to one another. Types are listed from <b>best (top)</b> to <b>worst (bottom)</b>.</p>
+      <table>
+        <tr><th>Type</th><th>Meaning</th><th>Example</th></tr>
+        <tr><td><b>Functional (Best)</b></td><td>All elements do one single task</td><td>computeSquareRoot()</td></tr>
+        <tr><td>Sequential</td><td>Output of one part is input to next</td><td>read → validate → process</td></tr>
+        <tr><td>Communicational</td><td>Elements use the same data</td><td>Operations on same record</td></tr>
+        <tr><td>Procedural</td><td>Elements follow a sequence of control</td><td>Steps executed in order</td></tr>
+        <tr><td>Temporal</td><td>Elements done at same time</td><td>Initialization module</td></tr>
+        <tr><td>Logical</td><td>Similar category, chosen by a flag</td><td>All input routines together</td></tr>
+        <tr><td><b>Coincidental (Worst)</b></td><td>No meaningful relationship</td><td>Random utility dump</td></tr>
+      </table>
+      <div class="tip"><b>Memory Trick</b>Order (best→worst): <b>Fun–Seq–Comm–Proc–Temp–Log–Coin</b>. Higher = better quality.</div>
+      <button class="copybtn">Copy notes</button>
+    </div>
+  </div>
+
+  <div class="card" data-q="Q22 types of coupling data stamp control common external content examples">
+    <div class="q-head"><div class="q-num">Q22</div><div class="q-text">Explain various types of Coupling with examples.</div><div class="q-toggle">+</div></div>
+    <div class="answer">
+      <p><span class="kw">Coupling</span> measures interdependence between modules. Types from <b>best/lowest (top)</b> to <b>worst/highest (bottom)</b>.</p>
+      <table>
+        <tr><th>Type</th><th>Meaning</th><th>Example</th></tr>
+        <tr><td><b>Data (Best)</b></td><td>Modules share simple data via parameters</td><td>add(a, b)</td></tr>
+        <tr><td>Stamp</td><td>Whole data structure/record passed</td><td>printRecord(student)</td></tr>
+        <tr><td>Control</td><td>One module controls another via a flag</td><td>process(flag)</td></tr>
+        <tr><td>External</td><td>Modules share an external format/device/protocol</td><td>Common file format</td></tr>
+        <tr><td>Common</td><td>Modules share global data</td><td>Global variable used by many</td></tr>
+        <tr><td><b>Content (Worst)</b></td><td>One module directly accesses another's internals</td><td>Modifying another module's data</td></tr>
+      </table>
+      <div class="key"><b>Key Point</b>Best to worst: <b>Data → Stamp → Control → External → Common → Content</b>. Always aim for <b>data coupling</b> (lowest).</div>
+      <button class="copybtn">Copy notes</button>
+    </div>
+  </div>
+
+  <div class="card" data-q="Q23 good software design fundamental principles abstraction modularity refinement correctness">
+    <div class="q-head"><div class="q-num">Q23</div><div class="q-text">What is Good Software Design? Explain the fundamental principles of software design.</div><div class="q-toggle">+</div></div>
+    <div class="answer">
+      <h4>Good Software Design</h4>
+      <p>A <span class="kw">good software design</span> is one that is <b>correct, efficient, understandable, and easy to maintain</b>. It satisfies all requirements (correct &amp; complete), uses resources efficiently, has low coupling/high cohesion, and is well documented.</p>
+      <h4>Characteristics of a Good Design</h4>
+      <ul>
+        <li><b>Correctness</b> — implements all requirements.</li>
+        <li><b>Understandability</b> — clear and simple structure.</li>
+        <li><b>Maintainability</b> — easy to modify.</li>
+        <li><b>Efficiency</b> — good use of resources.</li>
+      </ul>
+      <h4>Fundamental Principles of Software Design</h4>
+      <ol>
+        <li><b>Abstraction:</b> focus on essential features, hide details.</li>
+        <li><b>Modularity:</b> divide into independent modules.</li>
+        <li><b>Information Hiding / Encapsulation:</b> hide internal data behind interfaces.</li>
+        <li><b>Stepwise Refinement:</b> develop design top-down, adding detail gradually.</li>
+        <li><b>Functional Independence:</b> low coupling, high cohesion.</li>
+        <li><b>Hierarchy / Structure:</b> arrange modules in layers.</li>
+        <li><b>Refactoring:</b> improve design without changing function.</li>
+      </ol>
+      <div class="tip"><b>Exam Tip</b>The 4 most important principles to write are: <b>Abstraction, Modularity, Information Hiding, and Stepwise Refinement</b>.</div>
+      <button class="copybtn">Copy notes</button>
+    </div>
+  </div>
+</section>
+
+<!-- ===================== UNIT 4 ===================== -->
+<section class="unit" id="unit4">
+  <span class="unit-tag">Unit 4</span>
+  <h2 class="unit-title">UML &amp; Object Modelling</h2>
+
+  <div class="card" data-q="Q24 use case modeling diagram library management travel agency include extend generalization actors">
+    <div class="q-head"><div class="q-num">Q24</div><div class="q-text">Explain Use Case Modeling and its significance. Design Use Case Diagrams for Library Management System and Travel Agency System using include, extend and generalization.</div><div class="q-toggle">+</div></div>
+    <div class="answer">
+      <h4>Use Case Modeling</h4>
+      <p><span class="kw">Use case modeling</span> captures the <b>functional requirements</b> of a system by showing the interactions between <b>actors</b> (users/external systems) and <b>use cases</b> (functions the system provides).</p>
+      <h4>Components</h4>
+      <ul>
+        <li><b>Actor:</b> a user or external system (stick figure).</li>
+        <li><b>Use case:</b> a function/goal (oval).</li>
+        <li><b>System boundary:</b> a rectangle.</li>
+        <li><b>Relationships:</b> association, <b>&laquo;include&raquo;</b>, <b>&laquo;extend&raquo;</b>, generalization.</li>
+      </ul>
+      <table>
+        <tr><th>Relationship</th><th>Meaning</th></tr>
+        <tr><td>&laquo;include&raquo;</td><td>Base use case <b>always</b> uses the included one (mandatory).</td></tr>
+        <tr><td>&laquo;extend&raquo;</td><td>Optional/conditional behaviour added to a base use case.</td></tr>
+        <tr><td>Generalization</td><td>Inheritance between actors or use cases (is-a).</td></tr>
+      </table>
+      <h4>Significance</h4>
+      <ul><li>Captures requirements from the user's view.</li><li>Basis for design and test cases.</li><li>Improves communication with stakeholders.</li></ul>
+      <h4>Use Case Diagram — Library Management System</h4>
+      <div class="diagram">
+        <svg viewBox="0 0 460 280" xmlns="http://www.w3.org/2000/svg" font-family="sans-serif" font-size="12">
+          <!-- Member actor -->
+          <g stroke="#111827" stroke-width="1.6" fill="none"><circle cx="35" cy="40" r="10"/><line x1="35" y1="50" x2="35" y2="78"/><line x1="20" y1="60" x2="50" y2="60"/><line x1="35" y1="78" x2="22" y2="98"/><line x1="35" y1="78" x2="48" y2="98"/></g>
+          <text x="14" y="115" font-weight="700">Member</text>
+          <!-- Librarian actor -->
+          <g stroke="#111827" stroke-width="1.6" fill="none"><circle cx="35" cy="180" r="10"/><line x1="35" y1="190" x2="35" y2="218"/><line x1="20" y1="200" x2="50" y2="200"/><line x1="35" y1="218" x2="22" y2="238"/><line x1="35" y1="218" x2="48" y2="238"/></g>
+          <text x="10" y="255" font-weight="700">Librarian</text>
+          <!-- boundary -->
+          <rect x="150" y="10" width="290" height="260" rx="8" fill="none" stroke="#7c3aed" stroke-width="1.5"/>
+          <text x="270" y="28" font-weight="700" fill="#7c3aed">Library System</text>
+          <ellipse cx="230" cy="60" rx="62" ry="22" fill="#e0f2fe" stroke="#0ea5e9"/><text x="195" y="64">Search Book</text>
+          <ellipse cx="230" cy="115" rx="62" ry="22" fill="#e0f2fe" stroke="#0ea5e9"/><text x="200" y="119">Issue Book</text>
+          <ellipse cx="370" cy="115" rx="55" ry="20" fill="#fae8ff" stroke="#c026d3"/><text x="338" y="119" font-size="10">Verify Member</text>
+          <ellipse cx="230" cy="170" rx="62" ry="22" fill="#e0f2fe" stroke="#0ea5e9"/><text x="193" y="174">Return Book</text>
+          <ellipse cx="370" cy="170" rx="55" ry="20" fill="#ede9fe" stroke="#7c3aed"/><text x="345" y="174" font-size="10">Pay Fine</text>
+          <ellipse cx="230" cy="230" rx="62" ry="22" fill="#e0f2fe" stroke="#0ea5e9"/><text x="195" y="234">Add Book</text>
+          <!-- associations -->
+          <g stroke="#111827" stroke-width="1.2">
+            <line x1="50" y1="60" x2="168" y2="60"/><line x1="50" y1="60" x2="168" y2="112"/><line x1="50" y1="70" x2="168" y2="168"/>
+            <line x1="50" y1="185" x2="168" y2="228"/>
+          </g>
+          <!-- include / extend -->
+          <line x1="292" y1="115" x2="315" y2="115" stroke="#c026d3" stroke-dasharray="4 3"/><text x="270" y="100" font-size="9" fill="#c026d3">«include»</text>
+          <line x1="292" y1="170" x2="315" y2="170" stroke="#7c3aed" stroke-dasharray="4 3"/><text x="272" y="158" font-size="9" fill="#7c3aed">«extend»</text>
+        </svg>
+        <div class="dia-cap">Library System — Issue Book «includes» Verify Member; Return Book «extend» Pay Fine</div>
+      </div>
+      <h4>Use Case Diagram — Travel Agency System</h4>
+      <ul>
+        <li><b>Actors:</b> Customer, Travel Agent, Payment System.</li>
+        <li><b>Use cases:</b> Search Trip, Book Ticket (<b>«include»</b> Make Payment), Cancel Booking (<b>«extend»</b> Refund), Manage Packages.</li>
+        <li><b>Generalization:</b> "Premium Customer" is a generalization of "Customer".</li>
+      </ul>
+      <button class="copybtn">Copy notes</button>
+    </div>
+  </div>
+
+  <div class="card" data-q="Q25 sequence diagrams development examples library book issue mood music player ATM cash withdrawal lifeline message">
+    <div class="q-head"><div class="q-num">Q25</div><div class="q-text">Explain Sequence Diagrams and their development with examples. Draw sequence diagrams for Library Book Issue, Mood-Based Music Player, and ATM Cash Withdrawal.</div><div class="q-toggle">+</div></div>
+    <div class="answer">
+      <h4>Sequence Diagram</h4>
+      <p>A <span class="kw">sequence diagram</span> is an interaction diagram that shows <b>how objects interact over time</b> through a sequence of <b>messages</b>. Time flows top to bottom.</p>
+      <h4>Components</h4>
+      <ul>
+        <li><b>Objects/Actors:</b> shown at the top.</li>
+        <li><b>Lifeline:</b> vertical dashed line under each object.</li>
+        <li><b>Activation bar:</b> rectangle showing active period.</li>
+        <li><b>Messages:</b> solid arrow (call), dashed arrow (return).</li>
+      </ul>
+      <h4>1. ATM Cash Withdrawal — Sequence Diagram</h4>
+      <div class="diagram">
+        <svg viewBox="0 0 480 270" xmlns="http://www.w3.org/2000/svg" font-family="sans-serif" font-size="11">
+          <!-- heads -->
+          <rect x="20" y="10" width="70" height="26" rx="4" fill="#e0f2fe" stroke="#0ea5e9"/><text x="40" y="27">User</text>
+          <rect x="150" y="10" width="70" height="26" rx="4" fill="#ede9fe" stroke="#7c3aed"/><text x="170" y="27">ATM</text>
+          <rect x="280" y="10" width="70" height="26" rx="4" fill="#fae8ff" stroke="#c026d3"/><text x="293" y="27">Bank</text>
+          <rect x="400" y="10" width="70" height="26" rx="4" fill="#e0f2fe" stroke="#0ea5e9"/><text x="415" y="27">Account</text>
+          <!-- lifelines -->
+          <g stroke="#94a3b8" stroke-dasharray="4 4"><line x1="55" y1="36" x2="55" y2="260"/><line x1="185" y1="36" x2="185" y2="260"/><line x1="315" y1="36" x2="315" y2="260"/><line x1="435" y1="36" x2="435" y2="260"/></g>
+          <!-- messages -->
+          <g stroke="#111827" stroke-width="1.3" marker-end="url(#sq)">
+            <line x1="55" y1="55" x2="183" y2="55"/><line x1="185" y1="90" x2="313" y2="90"/>
+            <line x1="315" y1="120" x2="433" y2="120"/><line x1="435" y1="150" x2="317" y2="150" stroke-dasharray="4 3"/>
+            <line x1="315" y1="180" x2="187" y2="180" stroke-dasharray="4 3"/><line x1="185" y1="215" x2="57" y2="215"/>
+          </g>
+          <text x="62" y="50" font-size="10">1. Insert card + PIN</text>
+          <text x="190" y="85" font-size="10">2. Validate</text>
+          <text x="318" y="115" font-size="10">3. Check balance</text>
+          <text x="320" y="145" font-size="10" fill="#16a34a">4. Balance OK</text>
+          <text x="200" y="175" font-size="10" fill="#16a34a">5. Approve</text>
+          <text x="62" y="210" font-size="10">6. Dispense cash</text>
+          <defs><marker id="sq" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto"><path d="M0,0 L6,3 L0,6 Z" fill="#111827"/></marker></defs>
+        </svg>
+        <div class="dia-cap">ATM Cash Withdrawal — message sequence between objects</div>
+      </div>
+      <h4>2. Library Book Issue Process</h4>
+      <ol><li>Member → Librarian: request book.</li><li>Librarian → System: verify membership.</li><li>System → Database: check book availability.</li><li>Database → System: available.</li><li>System → Librarian: confirm issue, update records.</li><li>Librarian → Member: hand over book.</li></ol>
+      <h4>3. Mood-Based Music Player</h4>
+      <ol><li>User → App: select mood (Happy).</li><li>App → MoodEngine: getPlaylist(mood).</li><li>MoodEngine → Database: fetch matching songs.</li><li>Database → MoodEngine: song list.</li><li>MoodEngine → App: return playlist.</li><li>App → User: play songs.</li></ol>
+      <div class="tip"><b>Exam Tip</b>Always label: object at top, dashed lifeline, solid arrow for call, dashed arrow for return.</div>
+      <button class="copybtn">Copy notes</button>
+    </div>
+  </div>
+
+  <div class="card" data-q="Q26 class diagrams UML relationships association aggregation composition dependency inheritance multiplicity library student management">
+    <div class="q-head"><div class="q-num">Q26</div><div class="q-text">Explain Class Diagrams and UML relationships (Association, Aggregation, Composition, Dependency, Inheritance, Multiplicity). Design class diagrams for Library and Student Management Systems.</div><div class="q-toggle">+</div></div>
+    <div class="answer">
+      <h4>Class Diagram</h4>
+      <p>A <span class="kw">class diagram</span> is a static structural UML diagram showing the system's <b>classes, their attributes, methods, and relationships</b>. Each class is a box with 3 parts: <b>Name | Attributes | Methods</b>.</p>
+      <div class="diagram">
+        <svg viewBox="0 0 200 120" xmlns="http://www.w3.org/2000/svg" font-family="sans-serif" font-size="11">
+          <rect x="40" y="10" width="120" height="100" fill="#e0f2fe" stroke="#0ea5e9"/>
+          <line x1="40" y1="34" x2="160" y2="34" stroke="#0ea5e9"/><line x1="40" y1="78" x2="160" y2="78" stroke="#0ea5e9"/>
+          <text x="80" y="28" font-weight="700">Book</text>
+          <text x="46" y="50">- id : int</text><text x="46" y="66">- title : String</text>
+          <text x="46" y="94">+ issue()</text><text x="46" y="108" font-size="0"> </text>
+        </svg>
+        <div class="dia-cap">Class box: Name / Attributes / Methods</div>
+      </div>
+      <h4>UML Relationships</h4>
+      <table>
+        <tr><th>Relationship</th><th>Notation</th><th>Meaning / Example</th></tr>
+        <tr><td>Association</td><td>plain line</td><td>"uses/has-a" — Student takes Course</td></tr>
+        <tr><td>Aggregation</td><td>hollow ◇ diamond</td><td>Weak whole-part (Department has Teachers; can exist separately)</td></tr>
+        <tr><td>Composition</td><td>filled ◆ diamond</td><td>Strong whole-part (Book has Pages; pages die with book)</td></tr>
+        <tr><td>Dependency</td><td>dashed arrow</td><td>One class uses another temporarily</td></tr>
+        <tr><td>Inheritance (Generalization)</td><td>hollow △ triangle</td><td>"is-a" — Student is a Person</td></tr>
+        <tr><td>Multiplicity</td><td>1, 0..*, 1..*</td><td>How many objects relate (1 Member borrows 0..* Books)</td></tr>
+      </table>
+      <h4>Class Diagram — Library Management System</h4>
+      <div class="diagram">
+        <svg viewBox="0 0 440 180" xmlns="http://www.w3.org/2000/svg" font-family="sans-serif" font-size="11">
+          <rect x="10" y="60" width="110" height="60" fill="#e0f2fe" stroke="#0ea5e9"/><line x1="10" y1="82" x2="120" y2="82" stroke="#0ea5e9"/><text x="40" y="76" font-weight="700">Member</text><text x="16" y="100">+ borrow()</text>
+          <rect x="320" y="60" width="110" height="60" fill="#fae8ff" stroke="#c026d3"/><line x1="320" y1="82" x2="430" y2="82" stroke="#c026d3"/><text x="358" y="76" font-weight="700">Book</text><text x="326" y="100">+ issue()</text>
+          <rect x="160" y="10" width="120" height="40" fill="#ede9fe" stroke="#7c3aed"/><text x="190" y="34" font-weight="700">Librarian</text>
+          <rect x="160" y="120" width="120" height="50" fill="#ede9fe" stroke="#7c3aed"/><text x="195" y="148" font-weight="700">Loan</text>
+          <g stroke="#111827" stroke-width="1.2">
+            <line x1="120" y1="90" x2="320" y2="90"/>
+            <line x1="220" y1="50" x2="220" y2="60"/>
+            <line x1="120" y1="100" x2="160" y2="140"/><line x1="320" y1="100" x2="280" y2="140"/>
+          </g>
+          <text x="125" y="85" font-size="9">1</text><text x="300" y="85" font-size="9">0..*</text>
+        </svg>
+        <div class="dia-cap">Library — Member borrows Books (1 to 0..*), managed by Librarian via Loan</div>
+      </div>
+      <h4>Class Diagram — Student Management System</h4>
+      <ul>
+        <li><b>Classes:</b> Person, Student, Teacher, Course, Department.</li>
+        <li><b>Inheritance:</b> Student and Teacher inherit from <b>Person</b>.</li>
+        <li><b>Association:</b> Student enrolls in Course (multiplicity 1..*).</li>
+        <li><b>Aggregation:</b> Department has Teachers.</li>
+        <li><b>Composition:</b> Course is composed of Modules.</li>
+      </ul>
+      <button class="copybtn">Copy notes</button>
+    </div>
+  </div>
+
+  <div class="card" data-q="Q27 activity diagram components applications forking joining online food ordering system swimlane">
+    <div class="q-head"><div class="q-num">Q27</div><div class="q-text">Explain Activity Diagrams, their components, applications, and the concepts of Forking and Joining. Draw an Activity Diagram for an Online Food Ordering System.</div><div class="q-toggle">+</div></div>
+    <div class="answer">
+      <h4>Activity Diagram</h4>
+      <p>An <span class="kw">activity diagram</span> is a behavioural UML diagram that models the <b>flow of activities/actions</b> (the workflow) of a system, like an advanced flowchart.</p>
+      <h4>Components</h4>
+      <table>
+        <tr><th>Symbol</th><th>Meaning</th></tr>
+        <tr><td>Filled circle</td><td>Start / initial node</td></tr>
+        <tr><td>Rounded rectangle</td><td>Activity / action</td></tr>
+        <tr><td>Diamond</td><td>Decision / branch</td></tr>
+        <tr><td>Thick bar</td><td>Fork (split) / Join (merge)</td></tr>
+        <tr><td>Circle with ring</td><td>End / final node</td></tr>
+        <tr><td>Swimlanes</td><td>Who performs each activity</td></tr>
+      </table>
+      <h4>Forking &amp; Joining</h4>
+      <ul>
+        <li><b>Fork:</b> a single flow splits into <b>multiple parallel (concurrent) flows</b>.</li>
+        <li><b>Join:</b> multiple parallel flows <b>merge back</b> into one.</li>
+      </ul>
+      <h4>Applications</h4>
+      <ul><li>Modelling business workflows and processes.</li><li>Showing parallel/concurrent activities.</li><li>Describing use-case flow of control.</li></ul>
+      <h4>Activity Diagram — Online Food Ordering</h4>
+      <div class="diagram">
+        <svg viewBox="0 0 250 380" xmlns="http://www.w3.org/2000/svg" font-family="sans-serif" font-size="11" font-weight="600">
+          <circle cx="125" cy="18" r="8" fill="#111827"/>
+          <rect x="70" y="40" width="110" height="28" rx="14" fill="#e0f2fe" stroke="#0ea5e9"/><text x="85" y="58">Select food</text>
+          <rect x="70" y="80" width="110" height="28" rx="14" fill="#e0f2fe" stroke="#0ea5e9"/><text x="88" y="98">Add to cart</text>
+          <polygon points="125,120 165,145 125,170 85,145" fill="#ede9fe" stroke="#7c3aed"/><text x="103" y="149" font-size="9">Logged in?</text>
+          <rect x="10" y="180" width="80" height="26" rx="13" fill="#fae8ff" stroke="#c026d3"/><text x="30" y="197" font-size="10">Login</text>
+          <rect x="130" y="180" width="100" height="26" rx="13" fill="#e0f2fe" stroke="#0ea5e9"/><text x="142" y="197" font-size="10">Make payment</text>
+          <rect x="80" y="225" width="90" height="8" rx="3" fill="#7c3aed"/>
+          <rect x="20" y="250" width="90" height="26" rx="13" fill="#e0f2fe" stroke="#0ea5e9"/><text x="30" y="267" font-size="9">Prepare food</text>
+          <rect x="140" y="250" width="95" height="26" rx="13" fill="#e0f2fe" stroke="#0ea5e9"/><text x="150" y="267" font-size="9">Notify rider</text>
+          <rect x="80" y="295" width="90" height="8" rx="3" fill="#7c3aed"/>
+          <rect x="70" y="318" width="110" height="26" rx="13" fill="#e0f2fe" stroke="#0ea5e9"/><text x="88" y="335" font-size="10">Deliver order</text>
+          <circle cx="125" cy="365" r="9" fill="none" stroke="#111827" stroke-width="2"/><circle cx="125" cy="365" r="4" fill="#111827"/>
+          <g stroke="#64748b" stroke-width="1.3" fill="none" marker-end="url(#av)">
+            <line x1="125" y1="26" x2="125" y2="40"/><line x1="125" y1="68" x2="125" y2="80"/><line x1="125" y1="108" x2="125" y2="120"/>
+            <line x1="90" y1="150" x2="50" y2="180"/><line x1="160" y1="150" x2="180" y2="180"/>
+            <line x1="50" y1="206" x2="100" y2="225"/><line x1="180" y1="206" x2="150" y2="225"/>
+            <line x1="100" y1="233" x2="65" y2="250"/><line x1="150" y1="233" x2="185" y2="250"/>
+            <line x1="65" y1="276" x2="100" y2="295"/><line x1="185" y1="276" x2="150" y2="295"/>
+            <line x1="125" y1="303" x2="125" y2="318"/><line x1="125" y1="344" x2="125" y2="356"/>
+          </g>
+          <text x="55" y="218" font-size="8" fill="#7c3aed">FORK</text><text x="55" y="293" font-size="8" fill="#7c3aed">JOIN</text>
+          <defs><marker id="av" markerWidth="7" markerHeight="7" refX="5" refY="3" orient="auto"><path d="M0,0 L5,3 L0,6 Z" fill="#64748b"/></marker></defs>
+        </svg>
+        <div class="dia-cap">Online Food Ordering — fork runs "Prepare food" &amp; "Notify rider" in parallel, then joins</div>
+      </div>
+      <button class="copybtn">Copy notes</button>
+    </div>
+  </div>
+
+  <div class="card" data-q="Q28 differentiate state machine diagram activity diagram difference states transitions">
+    <div class="q-head"><div class="q-num">Q28</div><div class="q-text">Differentiate between State Machine Diagrams and Activity Diagrams.</div><div class="q-toggle">+</div></div>
+    <div class="answer">
+      <h4>Quick Definitions</h4>
+      <ul>
+        <li><b>State Machine Diagram:</b> shows the different <b>states</b> of a single object and how it moves between them on <b>events</b>.</li>
+        <li><b>Activity Diagram:</b> shows the <b>flow of activities/actions</b> (the overall workflow) of a process.</li>
+      </ul>
+      <table>
+        <tr><th>Basis</th><th>State Machine Diagram</th><th>Activity Diagram</th></tr>
+        <tr><td>Focus</td><td>States of an object</td><td>Flow of activities/actions</td></tr>
+        <tr><td>Main element</td><td>States</td><td>Activities/actions</td></tr>
+        <tr><td>Triggered by</td><td>Events</td><td>Completion of previous activity</td></tr>
+        <tr><td>Models</td><td>Object behaviour over its lifecycle</td><td>Workflow/business process</td></tr>
+        <tr><td>Parallelism</td><td>Limited</td><td>Supports fork/join (parallel)</td></tr>
+        <tr><td>Example</td><td>Order: New → Paid → Shipped → Delivered</td><td>Food ordering workflow</td></tr>
+      </table>
+      <div class="diagram">
+        <svg viewBox="0 0 420 70" xmlns="http://www.w3.org/2000/svg" font-family="sans-serif" font-size="11" font-weight="700">
+          <circle cx="15" cy="35" r="7" fill="#111827"/>
+          <rect x="35" y="20" width="70" height="30" rx="15" fill="#e0f2fe" stroke="#0ea5e9"/><text x="55" y="39">New</text>
+          <rect x="145" y="20" width="70" height="30" rx="15" fill="#ede9fe" stroke="#7c3aed"/><text x="165" y="39">Paid</text>
+          <rect x="255" y="20" width="80" height="30" rx="15" fill="#fae8ff" stroke="#c026d3"/><text x="270" y="39">Shipped</text>
+          <circle cx="375" cy="35" r="9" fill="none" stroke="#111827" stroke-width="2"/><circle cx="375" cy="35" r="4" fill="#111827"/>
+          <g stroke="#64748b" stroke-width="1.4" marker-end="url(#st)">
+            <line x1="22" y1="35" x2="33" y2="35"/><line x1="105" y1="35" x2="143" y2="35"/>
+            <line x1="215" y1="35" x2="253" y2="35"/><line x1="335" y1="35" x2="364" y2="35"/>
+          </g>
+          <defs><marker id="st" markerWidth="7" markerHeight="7" refX="5" refY="3" orient="auto"><path d="M0,0 L5,3 L0,6 Z" fill="#64748b"/></marker></defs>
+        </svg>
+        <div class="dia-cap">State Machine — states of an Order object changing on events</div>
+      </div>
+      <button class="copybtn">Copy notes</button>
+    </div>
+  </div>
+</section>
+
+<!-- ===================== UNIT 5 ===================== -->
+<section class="unit" id="unit5">
+  <span class="unit-tag">Unit 5</span>
+  <h2 class="unit-title">DFD &amp; Structured Modelling</h2>
+
+  <div class="card" data-q="Q29 data flow diagram DFD components levels process data store external entity flow">
+    <div class="q-head"><div class="q-num">Q29</div><div class="q-text">What is a Data Flow Diagram (DFD)? Explain its components and levels.</div><div class="q-toggle">+</div></div>
+    <div class="answer">
+      <h4>Definition</h4>
+      <p>A <span class="kw">Data Flow Diagram (DFD)</span> is a graphical tool that shows how <b>data flows through a system</b> — its inputs, processes, outputs and storage — without showing implementation details. It is the main tool of <b>structured analysis</b>.</p>
+      <h4>Components (Symbols)</h4>
+      <div class="diagram">
+        <svg viewBox="0 0 460 90" xmlns="http://www.w3.org/2000/svg" font-family="sans-serif" font-size="11" font-weight="700">
+          <circle cx="50" cy="40" r="26" fill="#e0f2fe" stroke="#0ea5e9"/><text x="34" y="44" font-size="10">Process</text><text x="22" y="82" font-size="9" font-weight="400">circle/bubble</text>
+          <rect x="140" y="20" width="80" height="40" fill="#ede9fe" stroke="#7c3aed"/><text x="150" y="44" font-size="10">Ext. Entity</text><text x="142" y="82" font-size="9" font-weight="400">square</text>
+          <line x1="270" y1="40" x2="340" y2="40" stroke="#111827" stroke-width="1.4" marker-end="url(#df)"/><text x="270" y="30" font-size="10">Data flow</text><text x="278" y="82" font-size="9" font-weight="400">arrow</text>
+          <line x1="380" y1="28" x2="450" y2="28" stroke="#c026d3"/><line x1="380" y1="55" x2="450" y2="55" stroke="#c026d3"/><text x="388" y="46" font-size="10">Data Store</text><text x="380" y="82" font-size="9" font-weight="400">open box</text>
+          <defs><marker id="df" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto"><path d="M0,0 L6,3 L0,6 Z" fill="#111827"/></marker></defs>
+        </svg>
+        <div class="dia-cap">Four DFD symbols (Yourdon notation)</div>
+      </div>
+      <table>
+        <tr><th>Component</th><th>Symbol</th><th>Meaning</th></tr>
+        <tr><td>Process</td><td>Circle/Bubble</td><td>Transforms input data into output</td></tr>
+        <tr><td>External Entity</td><td>Square</td><td>Source/destination of data (outside system)</td></tr>
+        <tr><td>Data Flow</td><td>Arrow</td><td>Movement of data</td></tr>
+        <tr><td>Data Store</td><td>Open rectangle</td><td>Where data is stored</td></tr>
+      </table>
+      <h4>Levels of DFD</h4>
+      <ol>
+        <li><b>Level 0 (Context Diagram):</b> entire system as one process with external entities.</li>
+        <li><b>Level 1:</b> major sub-processes of the system.</li>
+        <li><b>Level 2 and beyond:</b> further detailed breakdown of each process.</li>
+      </ol>
+      <div class="note"><b>Note</b>Higher level = more detail. Levels must be <b>balanced</b> (inputs/outputs consistent across levels).</div>
+      <button class="copybtn">Copy notes</button>
+    </div>
+  </div>
+
+  <div class="card" data-q="Q30 context level 0 1 2 DFD library management ATM withdrawal RMS calculation root mean square">
+    <div class="q-head"><div class="q-num">Q30</div><div class="q-text">Explain Context-Level, Level-0, Level-1 and Level-2 DFDs. Draw DFDs for Library Management, ATM Withdrawal and RMS Calculation systems.</div><div class="q-toggle">+</div></div>
+    <div class="answer">
+      <h4>DFD Levels Explained</h4>
+      <ul>
+        <li><b>Context (Level-0):</b> whole system shown as a <b>single process</b> with external entities.</li>
+        <li><b>Level-1:</b> the single process is expanded into its <b>main processes</b>.</li>
+        <li><b>Level-2:</b> each Level-1 process is further broken into <b>sub-processes</b>.</li>
+      </ul>
+      <h4>Context-Level DFD — Library Management System</h4>
+      <div class="diagram">
+        <svg viewBox="0 0 440 130" xmlns="http://www.w3.org/2000/svg" font-family="sans-serif" font-size="11" font-weight="700">
+          <rect x="10" y="45" width="80" height="40" fill="#ede9fe" stroke="#7c3aed"/><text x="30" y="69">Member</text>
+          <circle cx="220" cy="65" r="40" fill="#e0f2fe" stroke="#0ea5e9"/><text x="180" y="62">Library</text><text x="180" y="78">System</text>
+          <rect x="350" y="45" width="80" height="40" fill="#ede9fe" stroke="#7c3aed"/><text x="362" y="69">Librarian</text>
+          <g stroke="#111827" stroke-width="1.3" marker-end="url(#d0)">
+            <line x1="90" y1="58" x2="180" y2="58"/><line x1="178" y1="78" x2="92" y2="78"/>
+            <line x1="350" y1="58" x2="262" y2="58"/><line x1="260" y1="78" x2="348" y2="78"/>
+          </g>
+          <text x="98" y="52" font-size="9" font-weight="400">request book</text>
+          <text x="98" y="92" font-size="9" font-weight="400">book details</text>
+          <defs><marker id="d0" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto"><path d="M0,0 L6,3 L0,6 Z" fill="#111827"/></marker></defs>
+        </svg>
+        <div class="dia-cap">Context (Level-0) DFD — Library System</div>
+      </div>
+      <h4>Level-1 DFD — Library (main processes)</h4>
+      <p>Processes: <b>1.0 Search Book</b>, <b>2.0 Issue Book</b>, <b>3.0 Return Book</b>, <b>4.0 Update Records</b>; Data stores: <b>D1 Book Database</b>, <b>D2 Member Database</b>.</p>
+      <h4>ATM Withdrawal — DFD (Level-1 idea)</h4>
+      <p>External entity: Customer → <b>1.0 Validate Card/PIN</b> → <b>2.0 Check Balance</b> (D1 Account) → <b>3.0 Dispense Cash</b> → <b>4.0 Update Balance</b>.</p>
+      <h4>RMS (Root Mean Square) Calculation — DFD</h4>
+      <div class="diagram">
+        <svg viewBox="0 0 440 120" xmlns="http://www.w3.org/2000/svg" font-family="sans-serif" font-size="10" font-weight="700">
+          <rect x="5" y="45" width="60" height="34" fill="#ede9fe" stroke="#7c3aed"/><text x="18" y="66">User</text>
+          <circle cx="135" cy="62" r="30" fill="#e0f2fe" stroke="#0ea5e9"/><text x="108" y="58">1.0 Square</text><text x="113" y="72">each no.</text>
+          <circle cx="250" cy="62" r="30" fill="#e0f2fe" stroke="#0ea5e9"/><text x="222" y="58">2.0 Mean</text><text x="222" y="72">(average)</text>
+          <circle cx="365" cy="62" r="30" fill="#e0f2fe" stroke="#0ea5e9"/><text x="338" y="58">3.0 Square</text><text x="345" y="72">root</text>
+          <g stroke="#111827" stroke-width="1.2" marker-end="url(#dr)">
+            <line x1="65" y1="62" x2="103" y2="62"/><line x1="165" y1="62" x2="218" y2="62"/><line x1="280" y1="62" x2="333" y2="62"/>
+          </g>
+          <text x="66" y="56" font-size="8" font-weight="400">numbers</text>
+          <text x="170" y="56" font-size="8" font-weight="400">squares</text>
+          <text x="285" y="56" font-size="8" font-weight="400">mean</text>
+          <text x="350" y="110" font-size="9" font-weight="400">→ RMS result</text>
+          <defs><marker id="dr" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto"><path d="M0,0 L6,3 L0,6 Z" fill="#111827"/></marker></defs>
+        </svg>
+        <div class="dia-cap">RMS Calculation DFD — Square → Mean → Square Root</div>
+      </div>
+      <div class="tip"><b>Exam Tip</b>RMS = √(mean of squares). Show 3 processes: square each value, take average, then square root.</div>
+      <button class="copybtn">Copy notes</button>
+    </div>
+  </div>
+</section>
+
+<!-- ===================== UNIT 6 ===================== -->
+<section class="unit" id="unit6">
+  <span class="unit-tag">Unit 6</span>
+  <h2 class="unit-title">Verification, Validation &amp; Testing</h2>
+
+  <div class="card" data-q="Q31 verification validation V&amp;V differentiate code verification process examples">
+    <div class="q-head"><div class="q-num">Q31</div><div class="q-text">Explain Verification and Validation (V&amp;V). Differentiate between them with examples. Also discuss the Code Verification Process.</div><div class="q-toggle">+</div></div>
+    <div class="answer">
+      <h4>Definitions</h4>
+      <ul>
+        <li><b>Verification:</b> "Are we building the product <b>right</b>?" — checking that the software conforms to its specification at each phase (static, no execution needed).</li>
+        <li><b>Validation:</b> "Are we building the <b>right</b> product?" — checking that the final software meets the user's actual needs (usually by execution/testing).</li>
+      </ul>
+      <h4>Difference</h4>
+      <table>
+        <tr><th>Basis</th><th>Verification</th><th>Validation</th></tr>
+        <tr><td>Question</td><td>Building the product right?</td><td>Building the right product?</td></tr>
+        <tr><td>Checks against</td><td>Specifications/design</td><td>User requirements</td></tr>
+        <tr><td>Method</td><td>Reviews, walkthroughs, inspections (static)</td><td>Testing (dynamic)</td></tr>
+        <tr><td>When</td><td>Throughout each phase</td><td>At/after development</td></tr>
+        <tr><td>Example</td><td>Reviewing the design document</td><td>Running the program to test outputs</td></tr>
+      </table>
+      <h4>Code Verification Process</h4>
+      <p>Checking the source code <b>without/with execution</b> to ensure correctness:</p>
+      <ol>
+        <li><b>Code Review / Walkthrough:</b> manual reading of code to find errors.</li>
+        <li><b>Code Inspection:</b> formal, checklist-based defect detection.</li>
+        <li><b>Static Analysis:</b> tools check code for errors without running it.</li>
+        <li><b>Unit Testing:</b> executing modules to verify logic.</li>
+      </ol>
+      <div class="key"><b>Key Point</b>Verification = <b>static</b> (no run), Validation = <b>dynamic</b> (run/test).</div>
+      <button class="copybtn">Copy notes</button>
+    </div>
+  </div>
+
+  <div class="card" data-q="Q32 code walkthrough inspection review types importance software quality">
+    <div class="q-head"><div class="q-num">Q32</div><div class="q-text">Explain Code Walkthrough, Code Inspection, Code Review and different types of Code Reviews. Discuss their importance in software quality.</div><div class="q-toggle">+</div></div>
+    <div class="answer">
+      <h4>Code Review</h4>
+      <p>A <span class="kw">code review</span> is the systematic examination of source code by people other than the author to <b>find defects and improve quality</b> before testing.</p>
+      <h4>Code Walkthrough</h4>
+      <p>An <b>informal</b> review where the author <b>walks the team through the code</b> step by step to explain logic and gather feedback. Less formal, no strict checklist.</p>
+      <h4>Code Inspection</h4>
+      <p>A <b>formal, rigorous</b> review with defined roles (moderator, reader, author, recorder) and a <b>checklist</b> of common errors. More structured and effective than a walkthrough.</p>
+      <h4>Types of Code Reviews</h4>
+      <ul>
+        <li><b>Formal Inspection:</b> structured, roles + checklist.</li>
+        <li><b>Walkthrough:</b> informal, author-led.</li>
+        <li><b>Pair Programming:</b> continuous review while coding (XP).</li>
+        <li><b>Peer / Over-the-shoulder review:</b> a colleague reviews quickly.</li>
+        <li><b>Tool-assisted review:</b> using static analysis tools.</li>
+      </ul>
+      <table>
+        <tr><th>Basis</th><th>Walkthrough</th><th>Inspection</th></tr>
+        <tr><td>Formality</td><td>Informal</td><td>Formal</td></tr>
+        <tr><td>Checklist</td><td>No</td><td>Yes</td></tr>
+        <tr><td>Roles</td><td>Loose</td><td>Defined</td></tr>
+        <tr><td>Goal</td><td>Understand + feedback</td><td>Detect defects</td></tr>
+      </table>
+      <h4>Importance in Software Quality</h4>
+      <ul><li>Detect defects <b>early</b> (cheaper to fix).</li><li>Improve readability and maintainability.</li><li>Spread knowledge across the team.</li><li>Reduce testing/maintenance cost.</li></ul>
+      <button class="copybtn">Copy notes</button>
+    </div>
+  </div>
+
+  <div class="card" data-q="Q33 black box white box testing difference boundary value analysis equivalence partitioning">
+    <div class="q-head"><div class="q-num">Q33</div><div class="q-text">Differentiate Black Box and White Box Testing with examples. Explain Boundary Value Analysis and Equivalence Partitioning.</div><div class="q-toggle">+</div></div>
+    <div class="answer">
+      <h4>Black Box vs White Box Testing</h4>
+      <table>
+        <tr><th>Basis</th><th>Black Box Testing</th><th>White Box Testing</th></tr>
+        <tr><td>Focus</td><td>Functionality (input→output)</td><td>Internal code/logic</td></tr>
+        <tr><td>Knowledge of code</td><td>Not required</td><td>Required</td></tr>
+        <tr><td>Based on</td><td>Requirements/specs</td><td>Code structure</td></tr>
+        <tr><td>Also called</td><td>Functional testing</td><td>Structural / glass-box testing</td></tr>
+        <tr><td>Done by</td><td>Testers</td><td>Developers</td></tr>
+        <tr><td>Techniques</td><td>BVA, Equivalence partitioning</td><td>Basis path, statement/branch coverage</td></tr>
+        <tr><td>Example</td><td>Test login with valid/invalid data</td><td>Check each if-else path executes</td></tr>
+      </table>
+      <h4>Equivalence Partitioning</h4>
+      <p>Divide input data into <b>partitions (classes)</b> where the system is expected to behave the same. Test <b>one value from each class</b> instead of all values.</p>
+      <p><b>Example:</b> Age field valid 18–60. Classes: invalid (&lt;18), valid (18–60), invalid (&gt;60). Test one value from each (e.g., 10, 30, 70).</p>
+      <h4>Boundary Value Analysis (BVA)</h4>
+      <p>Most errors occur at the <b>boundaries/edges</b> of input ranges, so test values <b>at and around the boundaries</b>.</p>
+      <p><b>Example:</b> For range 18–60, test: 17, 18, 19 (lower) and 59, 60, 61 (upper).</p>
+      <div class="tip"><b>Exam Tip</b>Both BVA and Equivalence Partitioning are <b>black-box</b> techniques. BVA tests edges; partitioning tests classes.</div>
+      <button class="copybtn">Copy notes</button>
+    </div>
+  </div>
+
+  <div class="card" data-q="Q34 software testing strategies unit integration system acceptance alpha beta smoke regression automation">
+    <div class="q-head"><div class="q-num">Q34</div><div class="q-text">Explain Software Testing Strategies — Unit, Integration, System, Acceptance, Alpha, Beta, Smoke, Regression and Automation Testing.</div><div class="q-toggle">+</div></div>
+    <div class="answer">
+      <h4>Testing Strategy (Levels)</h4>
+      <p>Testing follows a strategy that moves from small components to the whole system, often shown as the <b>"V" / bottom-up</b> sequence.</p>
+      <div class="diagram">
+        <svg viewBox="0 0 480 70" xmlns="http://www.w3.org/2000/svg" font-family="sans-serif" font-size="11" font-weight="700">
+          <rect x="5" y="22" width="100" height="30" rx="6" fill="#e0f2fe" stroke="#0ea5e9"/><text x="35" y="42">Unit</text>
+          <rect x="125" y="22" width="110" height="30" rx="6" fill="#ede9fe" stroke="#7c3aed"/><text x="140" y="42">Integration</text>
+          <rect x="255" y="22" width="90" height="30" rx="6" fill="#fae8ff" stroke="#c026d3"/><text x="278" y="42">System</text>
+          <rect x="365" y="22" width="110" height="30" rx="6" fill="#e0f2fe" stroke="#0ea5e9"/><text x="378" y="42">Acceptance</text>
+          <g stroke="#64748b" stroke-width="2" marker-end="url(#ts)">
+            <line x1="105" y1="37" x2="123" y2="37"/><line x1="235" y1="37" x2="253" y2="37"/><line x1="345" y1="37" x2="363" y2="37"/>
+          </g>
+          <defs><marker id="ts" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto"><path d="M0,0 L6,3 L0,6 Z" fill="#64748b"/></marker></defs>
+        </svg>
+        <div class="dia-cap">Levels of testing — small to large</div>
+      </div>
+      <ol>
+        <li><b>Unit Testing:</b> test individual modules/functions in isolation (uses stubs &amp; drivers).</li>
+        <li><b>Integration Testing:</b> test combined modules and their interfaces (Top-down, Bottom-up, Big-bang).</li>
+        <li><b>System Testing:</b> test the complete integrated system against requirements.</li>
+        <li><b>Acceptance Testing:</b> customer verifies the system meets needs (UAT) before delivery.</li>
+      </ol>
+      <h4>Other Important Types</h4>
+      <table>
+        <tr><th>Type</th><th>Meaning</th></tr>
+        <tr><td>Alpha Testing</td><td>Done by internal team/users at developer's site.</td></tr>
+        <tr><td>Beta Testing</td><td>Done by real users at their own site before release.</td></tr>
+        <tr><td>Smoke Testing</td><td>Quick "build verification" — checks basic functionality works.</td></tr>
+        <tr><td>Regression Testing</td><td>Re-test after changes to ensure nothing broke.</td></tr>
+        <tr><td>Automation Testing</td><td>Using tools/scripts (e.g., Selenium) to run tests automatically.</td></tr>
+      </table>
+      <div class="note"><b>Note</b>Alpha = at developer's site; Beta = at user's site. Smoke = "is the build stable enough to test?"</div>
+      <button class="copybtn">Copy notes</button>
+    </div>
+  </div>
+
+  <div class="card" data-q="Q35 basis path testing cyclomatic complexity independent paths drivers stubs unit testing">
+    <div class="q-head"><div class="q-num">Q35</div><div class="q-text">Explain Basis Path Testing, Cyclomatic Complexity, Independent Paths, Drivers and Stubs in Unit Testing.</div><div class="q-toggle">+</div></div>
+    <div class="answer">
+      <h4>Basis Path Testing</h4>
+      <p>A <b>white-box</b> technique (by McCabe) that derives a set of <b>independent execution paths</b> through the program using its <b>Control Flow Graph (CFG)</b>, and designs test cases to cover each path at least once.</p>
+      <h4>Cyclomatic Complexity (V(G))</h4>
+      <p>A metric that measures the <b>number of independent paths</b> in the program — i.e., the minimum number of test cases for full path coverage. Formulas:</p>
+      <ul>
+        <li><b>V(G) = E − N + 2</b> (E = edges, N = nodes)</li>
+        <li><b>V(G) = P + 1</b> (P = number of predicate/decision nodes)</li>
+        <li><b>V(G) = number of enclosed regions + 1</b></li>
+      </ul>
+      <h4>Independent Path</h4>
+      <p>A path through the program that introduces <b>at least one new edge/statement</b> not covered by previous paths. The number of such paths equals the cyclomatic complexity.</p>
+      <h4>Drivers and Stubs</h4>
+      <table>
+        <tr><th>Term</th><th>Meaning</th><th>Used in</th></tr>
+        <tr><td><b>Stub</b></td><td>Dummy <b>called</b> module (replaces lower module)</td><td>Top-down testing</td></tr>
+        <tr><td><b>Driver</b></td><td>Dummy <b>calling</b> module (replaces upper module)</td><td>Bottom-up testing</td></tr>
+      </table>
+      <div class="tip"><b>Memory Trick</b>Stub = <b>below</b> (called), Driver = <b>above</b> (caller). They are temporary scaffolding used in unit testing.</div>
+      <button class="copybtn">Copy notes</button>
+    </div>
+  </div>
+
+  <div class="card" data-q="Q36 solve CFG cyclomatic complexity independent path problems mccabe metric uses">
+    <div class="q-head"><div class="q-num">Q36</div><div class="q-text">Solve CFG, Cyclomatic Complexity and Independent Path problems. Explain McCabe's Cyclomatic Complexity metric and its uses.</div><div class="q-toggle">+</div></div>
+    <div class="answer">
+      <h4>McCabe's Cyclomatic Complexity</h4>
+      <p>It quantifies the <b>logical complexity</b> of a program from its Control Flow Graph (CFG). Lower V(G) = simpler, easier to test code.</p>
+      <h4>Example CFG (if-else inside a loop)</h4>
+      <div class="diagram">
+        <svg viewBox="0 0 240 230" xmlns="http://www.w3.org/2000/svg" font-family="sans-serif" font-size="11" font-weight="700">
+          <circle cx="120" cy="20" r="13" fill="#e0f2fe" stroke="#0ea5e9"/><text x="116" y="24">1</text>
+          <circle cx="120" cy="70" r="13" fill="#ede9fe" stroke="#7c3aed"/><text x="116" y="74">2</text>
+          <circle cx="60" cy="125" r="13" fill="#fae8ff" stroke="#c026d3"/><text x="56" y="129">3</text>
+          <circle cx="180" cy="125" r="13" fill="#fae8ff" stroke="#c026d3"/><text x="176" y="129">4</text>
+          <circle cx="120" cy="180" r="13" fill="#e0f2fe" stroke="#0ea5e9"/><text x="116" y="184">5</text>
+          <g stroke="#64748b" stroke-width="1.5" fill="none" marker-end="url(#cf)">
+            <line x1="120" y1="33" x2="120" y2="57"/>
+            <line x1="110" y1="80" x2="68" y2="113"/><line x1="130" y1="80" x2="172" y2="113"/>
+            <line x1="68" y1="137" x2="110" y2="170"/><line x1="172" y1="137" x2="130" y2="170"/>
+            <path d="M133,178 Q200,120 133,68"/>
+          </g>
+          <defs><marker id="cf" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto"><path d="M0,0 L6,3 L0,6 Z" fill="#64748b"/></marker></defs>
+        </svg>
+        <div class="dia-cap">Sample CFG: Nodes = 5, Edges = 6, Decision nodes = 1 (loop) + 1 (branch)</div>
+      </div>
+      <h4>Solved Calculation (for above CFG)</h4>
+      <p>Let <b>N = 5 nodes, E = 6 edges, P = 2 predicate nodes</b>.</p>
+      <ul>
+        <li>V(G) = E − N + 2 = 6 − 5 + 2 = <b>3</b></li>
+        <li>V(G) = P + 1 = 2 + 1 = <b>3</b></li>
+        <li>Regions + 1 = 2 + 1 = <b>3</b> ✓ (all methods agree)</li>
+      </ul>
+      <p><b>So we need 3 independent paths / test cases.</b> Example independent paths: 1-2-3-5, 1-2-4-5, and the loop-back path 1-2-3-5-2-... .</p>
+      <h4>Uses of Cyclomatic Complexity</h4>
+      <ul>
+        <li>Tells the <b>minimum number of test cases</b> for path coverage.</li>
+        <li>Measures <b>code complexity</b> and maintainability.</li>
+        <li>Helps identify modules needing <b>refactoring</b> (high V(G) = risky).</li>
+        <li>Aids in <b>effort estimation</b> and quality control.</li>
+      </ul>
+      <div class="key"><b>Key Formulae</b>V(G) = E − N + 2 = P + 1 = Regions + 1.</div>
+      <button class="copybtn">Copy notes</button>
+    </div>
+  </div>
+</section>
+
+<!-- ===================== UNIT 7 ===================== -->
+<section class="unit" id="unit7">
+  <span class="unit-tag">Unit 7</span>
+  <h2 class="unit-title">Estimation &amp; Maintenance</h2>
+
+  <div class="card" data-q="Q37 basic intermediate detailed COCOMO models compare effort development time numerical organic semidetached embedded">
+    <div class="q-head"><div class="q-num">Q37</div><div class="q-text">Explain Basic, Intermediate and Detailed COCOMO Models. Compare them and solve numerical problems for effort and development time estimation.</div><div class="q-toggle">+</div></div>
+    <div class="answer">
+      <h4>COCOMO</h4>
+      <p><span class="kw">COCOMO (Constructive Cost Model)</span>, by Barry Boehm, estimates <b>effort, time and cost</b> of a software project based on its size in <b>KLOC</b> (thousands of lines of code).</p>
+      <h4>Project Modes</h4>
+      <table>
+        <tr><th>Mode</th><th>Meaning</th><th>Example</th></tr>
+        <tr><td>Organic</td><td>Small, simple, experienced team</td><td>Small business app</td></tr>
+        <tr><td>Semi-detached</td><td>Medium size, mixed experience</td><td>OS utility, DBMS</td></tr>
+        <tr><td>Embedded</td><td>Large, complex, tight constraints</td><td>Real-time/flight software</td></tr>
+      </table>
+      <h4>1. Basic COCOMO</h4>
+      <p>Quick rough estimate using only size:</p>
+      <ul>
+        <li><b>Effort (E) = a × (KLOC)^b</b> person-months</li>
+        <li><b>Time (D) = c × (E)^d</b> months</li>
+      </ul>
+      <table>
+        <tr><th>Mode</th><th>a</th><th>b</th><th>c</th><th>d</th></tr>
+        <tr><td>Organic</td><td>2.4</td><td>1.05</td><td>2.5</td><td>0.38</td></tr>
+        <tr><td>Semi-detached</td><td>3.0</td><td>1.12</td><td>2.5</td><td>0.35</td></tr>
+        <tr><td>Embedded</td><td>3.6</td><td>1.20</td><td>2.5</td><td>0.32</td></tr>
+      </table>
+      <h4>2. Intermediate COCOMO</h4>
+      <p>Adds <b>15 Cost Drivers (EAF — Effort Adjustment Factor)</b> for accuracy: <b>E = a × (KLOC)^b × EAF</b>.</p>
+      <h4>3. Detailed COCOMO</h4>
+      <p>Applies cost drivers at <b>each phase</b> of the SDLC separately for the most accurate estimate.</p>
+      <h4>Comparison</h4>
+      <table>
+        <tr><th>Basis</th><th>Basic</th><th>Intermediate</th><th>Detailed</th></tr>
+        <tr><td>Cost drivers</td><td>None</td><td>15 (whole project)</td><td>15 (per phase)</td></tr>
+        <tr><td>Accuracy</td><td>Low</td><td>Medium</td><td>High</td></tr>
+        <tr><td>Use</td><td>Quick estimate</td><td>Better estimate</td><td>Precise estimate</td></tr>
+      </table>
+      <h4>Solved Numerical (Basic COCOMO)</h4>
+      <p><b>Problem:</b> An <b>organic</b> project of size <b>32 KLOC</b>. Find effort and development time.</p>
+      <ul>
+        <li>Effort E = 2.4 × (32)^1.05 ≈ 2.4 × 38.3 ≈ <b>91.9 person-months</b></li>
+        <li>Time D = 2.5 × (91.9)^0.38 ≈ 2.5 × 5.66 ≈ <b>14.2 months</b></li>
+        <li>Average staff = E / D ≈ 91.9 / 14.2 ≈ <b>6.5 persons</b></li>
+      </ul>
+      <div class="tip"><b>Exam Tip</b>Memorize the organic constants (2.4, 1.05, 2.5, 0.38) — organic numericals are asked most often.</div>
+      <button class="copybtn">Copy notes</button>
+    </div>
+  </div>
+
+  <div class="card" data-q="Q38 software maintenance re-engineering reverse engineering types examples corrective adaptive perfective preventive">
+    <div class="q-head"><div class="q-num">Q38</div><div class="q-text">Explain Software Maintenance, Re-engineering and Reverse Engineering with suitable examples.</div><div class="q-toggle">+</div></div>
+    <div class="answer">
+      <h4>Software Maintenance</h4>
+      <p><span class="kw">Software maintenance</span> is modifying software <b>after delivery</b> to correct faults, improve performance, or adapt to a changed environment.</p>
+      <h4>Types of Maintenance</h4>
+      <table>
+        <tr><th>Type</th><th>Purpose</th><th>Example</th></tr>
+        <tr><td>Corrective</td><td>Fix bugs/errors</td><td>Fix a login crash</td></tr>
+        <tr><td>Adaptive</td><td>Adapt to new environment</td><td>Update for new OS/tax law</td></tr>
+        <tr><td>Perfective</td><td>Improve/enhance features</td><td>Add a search filter</td></tr>
+        <tr><td>Preventive</td><td>Prevent future problems</td><td>Refactor risky code</td></tr>
+      </table>
+      <h4>Re-engineering</h4>
+      <p><span class="kw">Software re-engineering</span> = examining and <b>restructuring/rebuilding existing software</b> to improve quality, maintainability or migrate to new technology, <b>without changing its functionality</b>.</p>
+      <p><b>Example:</b> Converting an old <b>COBOL banking system</b> into a modern <b>Java</b> system while keeping the same features.</p>
+      <h4>Reverse Engineering</h4>
+      <p><span class="kw">Reverse engineering</span> = analysing existing software (often with little documentation) to <b>recover its design, structure and specifications</b> — going from <b>code → design → requirements</b> (backward direction).</p>
+      <p><b>Example:</b> Studying a legacy app's code to draw its DFDs/class diagrams when the original documentation is lost.</p>
+      <div class="diagram">
+        <svg viewBox="0 0 420 70" xmlns="http://www.w3.org/2000/svg" font-family="sans-serif" font-size="11" font-weight="700">
+          <rect x="10" y="22" width="90" height="30" rx="6" fill="#e0f2fe" stroke="#0ea5e9"/><text x="22" y="42">Old Code</text>
+          <rect x="160" y="22" width="100" height="30" rx="6" fill="#fae8ff" stroke="#c026d3"/><text x="172" y="42">Design/Specs</text>
+          <rect x="320" y="22" width="90" height="30" rx="6" fill="#ede9fe" stroke="#7c3aed"/><text x="328" y="42">New System</text>
+          <line x1="100" y1="37" x2="158" y2="37" stroke="#c026d3" stroke-width="2" marker-end="url(#re)"/><text x="100" y="18" font-size="9" fill="#c026d3">Reverse Eng.</text>
+          <line x1="260" y1="37" x2="318" y2="37" stroke="#7c3aed" stroke-width="2" marker-end="url(#re)"/><text x="262" y="18" font-size="9" fill="#7c3aed">Re-engineer</text>
+          <defs><marker id="re" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto"><path d="M0,0 L6,3 L0,6 Z" fill="#64748b"/></marker></defs>
+        </svg>
+        <div class="dia-cap">Reverse engineering recovers design; re-engineering rebuilds an improved system</div>
+      </div>
+      <div class="note"><b>Note</b>Reverse engineering = code → design (understand). Forward + reverse = re-engineering (rebuild).</div>
+      <button class="copybtn">Copy notes</button>
+    </div>
+  </div>
+</section>
+
+<!-- ===================== UNIT 8 ===================== -->
+<section class="unit" id="unit8">
+  <span class="unit-tag">Unit 8</span>
+  <h2 class="unit-title">Feasibility &amp; Project Types</h2>
+
+  <div class="card" data-q="Q39 technical economic operational schedule feasibility study example legal cost benefit">
+    <div class="q-head"><div class="q-num">Q39</div><div class="q-text">Explain Technical, Economic, Operational and Schedule Feasibility with a detailed feasibility study example.</div><div class="q-toggle">+</div></div>
+    <div class="answer">
+      <h4>Feasibility Study</h4>
+      <p>A <span class="kw">feasibility study</span> is done early in a project to check whether the proposed system is <b>practical and worth developing</b> in terms of technology, cost, operation and time.</p>
+      <h4>Types of Feasibility</h4>
+      <table>
+        <tr><th>Type</th><th>Question Answered</th></tr>
+        <tr><td><b>Technical</b></td><td>Can we build it with available technology, hardware, tools and skills?</td></tr>
+        <tr><td><b>Economic</b></td><td>Is it cost-effective? (cost–benefit analysis, ROI)</td></tr>
+        <tr><td><b>Operational</b></td><td>Will users/organization actually use and accept it?</td></tr>
+        <tr><td><b>Schedule</b></td><td>Can it be completed within the required time?</td></tr>
+      </table>
+      <p>(Some texts also add <b>Legal feasibility</b> — does it comply with laws/regulations?)</p>
+      <h4>Detailed Example — Online College Admission System</h4>
+      <ul>
+        <li><b>Technical:</b> Can be built using web technologies + a database; team has the skills and servers are available. ✓ Feasible.</li>
+        <li><b>Economic:</b> Development cost ₹5 lakh; saves manual paperwork &amp; staff time worth ₹8 lakh/year → positive ROI. ✓ Feasible.</li>
+        <li><b>Operational:</b> Staff and students are comfortable with online forms; training is minimal. ✓ Feasible.</li>
+        <li><b>Schedule:</b> Required before next admission season (5 months); estimated 4 months. ✓ Feasible.</li>
+      </ul>
+      <div class="key"><b>Key Point</b>Remember the 4 (or 5) feasibilities as: <b>T-E-O-S</b> (+ Legal): Technical, Economic, Operational, Schedule.</div>
+      <button class="copybtn">Copy notes</button>
+    </div>
+  </div>
+
+  <div class="card" data-q="Q40 classify types of software projects examples system application embedded real-time scientific">
+    <div class="q-head"><div class="q-num">Q40</div><div class="q-text">Classify different types of Software Projects with suitable examples.</div><div class="q-toggle">+</div></div>
+    <div class="answer">
+      <h4>Classification of Software Projects</h4>
+      <table>
+        <tr><th>Type</th><th>Description</th><th>Example</th></tr>
+        <tr><td><b>System Software</b></td><td>Manages hardware &amp; provides a platform</td><td>Operating systems, compilers, drivers</td></tr>
+        <tr><td><b>Application Software</b></td><td>Performs specific user tasks</td><td>MS Word, banking app, billing system</td></tr>
+        <tr><td><b>Embedded Software</b></td><td>Runs inside hardware/devices</td><td>Washing machine, car ECU, microwave</td></tr>
+        <tr><td><b>Real-Time Software</b></td><td>Responds within strict time limits</td><td>Air traffic control, flight software</td></tr>
+        <tr><td><b>Scientific / Engineering</b></td><td>Heavy computation &amp; numerical work</td><td>MATLAB, weather modelling, CAD</td></tr>
+        <tr><td><b>Web-Based Software</b></td><td>Runs over the internet/browser</td><td>E-commerce sites, web apps</td></tr>
+        <tr><td><b>Artificial Intelligence</b></td><td>Uses learning/reasoning algorithms</td><td>Chatbots, expert systems, ML apps</td></tr>
+        <tr><td><b>Business / Information Systems</b></td><td>Manage organizational data</td><td>ERP, payroll, inventory systems</td></tr>
+      </table>
+      <h4>Other ways to classify projects</h4>
+      <ul>
+        <li><b>By size:</b> small, medium, large.</li>
+        <li><b>By type of development:</b> new development, maintenance, re-engineering.</li>
+        <li><b>By customer:</b> in-house, outsourced, product (for market).</li>
+      </ul>
+      <div class="tip"><b>Exam Tip</b>Always give 2–3 named examples per type — examples fetch marks in this question.</div>
+      <button class="copybtn">Copy notes</button>
+    </div>
+  </div>
+</section>
+
+<footer style="text-align:center;color:var(--grey);font-size:14px;margin-top:50px;border-top:1px solid var(--grey-line);padding-top:20px;">
+  40 questions · 8 units · Software Engineering exam prep<br>
+  <span style="font-size:12.5px;">Tip: use the search box to jump straight to a topic. Good luck! 📘</span>
+</footer>
+
+</main>
+
+<button id="toTop" title="Back to top">↑</button>
+
+<script>
+(function(){
+  // Expand / collapse single card
+  document.querySelectorAll('.q-head').forEach(function(h){
+    h.addEventListener('click',function(){
+      h.parentElement.classList.toggle('open');
+    });
+  });
+  // Expand / collapse all
+  document.getElementById('expandAll').onclick=function(){
+    document.querySelectorAll('.card').forEach(c=>c.classList.add('open'));
+  };
+  document.getElementById('collapseAll').onclick=function(){
+    document.querySelectorAll('.card').forEach(c=>c.classList.remove('open'));
+  };
+  // Search
+  var search=document.getElementById('search');
+  var count=document.getElementById('searchcount');
+  search.addEventListener('input',function(){
+    var q=search.value.trim().toLowerCase();
+    var shown=0;
+    document.querySelectorAll('.card').forEach(function(c){
+      var t=c.getAttribute('data-q').toLowerCase();
+      var match=q===''||t.indexOf(q)>-1;
+      c.style.display=match?'':'none';
+      if(match)shown++;
+      if(q!==''&&match)c.classList.add('open');
+    });
+    document.querySelectorAll('.unit').forEach(function(u){
+      var any=u.querySelector('.card:not([style*="display: none"])');
+      u.style.display=any?'':'none';
+    });
+    count.textContent=q===''?'':(shown+' question'+(shown===1?'':'s')+' found');
+    document.getElementById('nores').style.display=(q!==''&&shown===0)?'block':'none';
+  });
+  // Copy notes
+  document.querySelectorAll('.copybtn').forEach(function(b){
+    b.addEventListener('click',function(){
+      var ans=b.closest('.card');
+      var txt=ans.querySelector('.q-text').innerText+'\n\n'+ans.querySelector('.answer').innerText;
+      navigator.clipboard.writeText(txt).then(function(){
+        var old=b.textContent;b.textContent='✓ Copied!';
+        setTimeout(function(){b.textContent=old;},1500);
+      });
+    });
+  });
+  // Back to top + progress
+  var toTop=document.getElementById('toTop');
+  var prog=document.getElementById('progress');
+  window.addEventListener('scroll',function(){
+    var st=document.documentElement.scrollTop||document.body.scrollTop;
+    var sh=(document.documentElement.scrollHeight||document.body.scrollHeight)-document.documentElement.clientHeight;
+    prog.style.width=(sh>0?(st/sh*100):0)+'%';
+    toTop.classList.toggle('show',st>400);
+  });
+  toTop.onclick=function(){window.scrollTo({top:0,behavior:'smooth'});};
+})();
+</script>
+</body>
+</html>
